@@ -163,3 +163,60 @@ body {
 
 .game-controls button {
 /* ... CSS dosyasının geri kalanı aynı ... */
+/* ... (üst kısımlar aynı) ... */
+
+/* Giriş Ekranı */
+.login-box {
+    background-color: #16213e;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    max-width: 500px;
+}
+.login-box input {
+    width: 80%;
+    padding: 10px;
+    margin-top: 10px; /* Diğer inputla arasını açtık */
+    border: 1px solid #0f3460;
+    border-radius: 5px;
+    background-color: #1a1a2e;
+    color: white;
+}
+.login-box button {
+    width: 85%;
+    padding: 12px;
+    margin-top: 20px;
+    background-color: #e94560;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+.login-box button:hover {
+    background-color: #c73a51;
+}
+
+/* YENİ EKLENDİ: Bilgi Kutusu Stili */
+.game-info-box {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    text-align: left;
+    font-size: 12px;
+}
+.game-info-box h3 {
+    color: #e94560;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+.game-info-box p {
+    margin-top: 0;
+    line-height: 1.5;
+}
+
+.legal-footer {
+/* ... (geri kalan stiller aynı) ... */
