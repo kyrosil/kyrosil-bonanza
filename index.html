@@ -1,1 +1,52 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kyrosil Bonanza</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="main.js" defer></script>
+</head>
+<body>
 
+    <div id="language-selector">
+        <button data-lang="tr">TR</button>
+        <button data-lang="en">EN</button>
+    </div>
+
+    <div id="loading-screen" class="screen">
+        <div class="loading-content">
+            <h1>Kyros Play</h1>
+            <p data-key="loading_text">Loading...</p>
+        </div>
+    </div>
+
+    <div id="login-screen" class="screen hidden">
+        <div class="login-box">
+            <h2 data-key="login_title">Login</h2>
+            <p data-key="login_desc">Enter a username to start.</p>
+            <input type="text" id="username-input" data-key-placeholder="username_placeholder">
+            <button id="login-button" data-key="login_button">Start Game</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen hidden">
+        <div class="game-header">
+            <div id="player-info"><span data-key="welcome_text">Welcome</span>, <span id="player-username"></span>!</div>
+            <div id="balance-info"><span data-key="balance_text">Balance</span>: <span id="balance-display">5000</span> Kyroslira</div>
+        </div>
+
+        <div id="game-grid"></div>
+
+        <div class="game-controls">
+            <div class="bet-control">
+                <span data-key="bet_text">BET</span>
+                <span id="bet-amount">100</span>
+            </div>
+            <button id="spin-button" data-key="spin_button">SPIN</button>
+            <button id="buy-bonus-button" data-key="buy_bonus_button">BUY BONUS (2000)</button>
+        </div>
+    </div>
+
+</body>
+</html>
