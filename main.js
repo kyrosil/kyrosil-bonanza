@@ -1,41 +1,34 @@
-// Dil ve sembol gibi genel sabitler burada kalabilir
+// Dil ve sembol gibi genel sabitler
 const languageStrings = {
     tr: {
-        loading_text: "Yükleniyor...",
-        login_title: "Giriş Yap",
-        login_desc: "Başlamak için bir kullanıcı adı girin.",
-        username_placeholder: "Instagram veya EU Portal Adı",
+        loading_text: "Oyun Yükleniyor...",
+        login_title: "Oyuna Giriş",
+        login_desc: "Başlamak için bilgilerinizi girin.",
+        username_placeholder: "Kullanıcı Adı",
+        email_placeholder: "E-posta Adresi", // YENİ
         login_button: "Oyuna Başla",
-        welcome_text: "Hoş Geldin",
-        balance_text: "Bakiye",
-        bet_text: "BAHİS",
-        spin_button: "ÇEVİR",
-        buy_bonus_button: "BONUS SATIN AL (2000)",
-        legal_1: "© 2025 Kyrosil Bonanza. Tüm hakları saklıdır.",
-        legal_2: "Kyrosil Bonanza, Pragmatic Play Ltd. tarafından sağlanan içerik ve dağıtım lisansı kapsamında geliştirilmiştir ve Yunanistan ulusal mevzuatına uygundur. Yunanistan Oyun Denetim Komisyonu (Ε.Ε.Ε.Π.) gözetiminde, Kayıt Numarası: EEEP-NPR/2025-0674 ile faaliyet göstermektedir.",
-        legal_3: "Oyunda gerçek para kullanılmaz veya kazanılmaz. Oyun yalnızca eğlence ve tanıtım amacıyla sunulmaktadır."
+        how_to_play_title: "Nasıl Oynanır", // YENİ
+        how_to_play_desc: "Amaç, başlangıçtaki 5000 Kyroslira'yı çevirmeler yaparak veya bonus satın alarak katlamaktır. Kazanmak için 8 veya daha fazla aynı sembolü eşleştirin!", // YENİ
+        rewards_title: "Ödüller", // YENİ
+        rewards_desc: "Belirtilen bakiye hedeflerine ulaşın ve ödülünüzü almak için bizimle iletişime geçin! (Ödüller yakında açıklanacak).", // YENİ
+        // ... (diğer metinler aynı)
     },
     en: {
-        loading_text: "Loading...",
-        login_title: "Login",
-        login_desc: "Enter a username to start.",
-        username_placeholder: "Instagram or EU Portal Name",
+        loading_text: "Game Loading...",
+        login_title: "Game Login",
+        login_desc: "Enter your details to start.",
+        username_placeholder: "Username",
+        email_placeholder: "Email Address", // NEW
         login_button: "Start Game",
-        welcome_text: "Welcome",
-        balance_text: "Balance",
-        bet_text: "BET",
-        spin_button: "SPIN",
-        buy_bonus_button: "BUY BONUS (2000)",
-        legal_1: "© 2025 Kyrosil Bonanza. All rights reserved.",
-        legal_2: "Kyrosil Bonanza is developed under content and distribution license from Pragmatic Play Ltd., and operates in accordance with Greek national regulations. The game complies with the supervision framework of the Hellenic Gaming Commission (Ε.Ε.Ε.Π.) under Registration ID: EEEP-NPR/2025-0674.",
-        legal_3: "No real money is used or won. This is a promotional game for entertainment purposes only."
+        how_to_play_title: "How to Play", // NEW
+        how_to_play_desc: "The goal is to increase your starting 5000 Kyroslira by spinning or buying bonuses. Match 8 or more symbols to win!", // NEW
+        rewards_title: "Rewards", // NEW
+        rewards_desc: "Reach the specified balance milestones and contact us to claim your prize! (Prizes to be announced soon).", // NEW
+        // ... (other texts are the same)
     }
+    // NOT: Diğer (legal_1 vb.) metin anahtarlarını kısalık için sildim ama sizinkinde duruyor olmalı.
 };
-const gameSymbols = ['Muz', 'Üzüm', 'Karpuz', 'Erik', 'Elma', 'Mavi Şeker', 'Yeşil Şeker', 'Mor Şeker', 'Kırmızı Kalp'];
-
-// Oyuncu durumu gibi genel değişkenler
-let currentLanguage = 'en';
-let playerData = {};
+// ... (languageStrings objesinin kalanı ve gameSymbols aynı)
 
 // Sayfa tamamen yüklendiğinde tüm kodlar buradan başlasın
 window.addEventListener('load', () => {
@@ -46,111 +39,63 @@ window.addEventListener('load', () => {
     const gameScreen = document.getElementById('game-screen');
     const loginButton = document.getElementById('login-button');
     const usernameInput = document.getElementById('username-input');
-    const playerUsernameDisplay = document.getElementById('player-username');
-    const balanceDisplay = document.getElementById('balance-display');
-    const betAmountDisplay = document.getElementById('bet-amount');
-    const spinButton = document.getElementById('spin-button');
-    const gameGrid = document.getElementById('game-grid');
+    const emailInput = document.getElementById('email-input'); // YENİ
+    // ... (diğer element seçimleri aynı)
 
-    // ---- Fonksiyonlar ----
-
-    function setLanguage(lang) {
-        currentLanguage = lang;
-        localStorage.setItem('language', lang);
-
-        document.querySelectorAll('#language-selector button').forEach(button => {
-            button.classList.remove('active');
-            if (button.dataset.lang === lang) {
-                button.classList.add('active');
-            }
-        });
-
-        document.querySelectorAll('[data-key]').forEach(element => {
-            const key = element.dataset.key;
-            if (languageStrings[lang][key]) {
-                element.textContent = languageStrings[lang][key];
-            }
-        });
-
-        document.querySelectorAll('[data-key-placeholder]').forEach(element => {
-            const key = element.dataset.keyPlaceholder;
-            if (languageStrings[lang][key]) {
-                element.placeholder = languageStrings[lang][key];
-            }
-        });
-    }
-
-    function populateGrid() {
-        gameGrid.innerHTML = '';
-        for (let i = 0; i < 30; i++) {
-            const randomSymbol = gameSymbols[Math.floor(Math.random() * gameSymbols.length)];
-            const symbolDiv = document.createElement('div');
-            symbolDiv.classList.add('symbol');
-            symbolDiv.textContent = randomSymbol;
-            gameGrid.appendChild(symbolDiv);
-        }
-    }
+    // ... (setLanguage ve populateGrid fonksiyonları aynı)
 
     // ---- İlk Kurulum ve Olay Dinleyicileri ----
 
-    // Dil Ayarları
-    document.querySelectorAll('#language-selector button').forEach(button => {
-        button.addEventListener('click', () => {
-            setLanguage(button.dataset.lang);
-        });
-    });
-    const savedLang = localStorage.getItem('language') || 'en';
-    setLanguage(savedLang);
+    // Dil Ayarları (aynı)
+    // ...
 
-    // Yükleme Ekranı Mantığı
-    setTimeout(() => {
-        loadingScreen.classList.add('hidden');
-        loginScreen.classList.remove('hidden');
-        loginScreen.style.display = 'flex';
-    }, 1500);
-
-    // Giriş Yapma Mantığı
+    // GİRİŞ YAPMA MANTIĞI (TAMAMEN YENİLENDİ)
     loginButton.addEventListener('click', () => {
         const username = usernameInput.value.trim();
-        if (username === "") {
-            alert(currentLanguage === 'tr' ? 'Lütfen bir kullanıcı adı girin.' : 'Please enter a username.');
+        const email = emailInput.value.trim();
+
+        // Doğrulama
+        if (username === "" || email === "") {
+            alert(currentLanguage === 'tr' ? 'Lütfen tüm alanları doldurun.' : 'Please fill in all fields.');
+            return;
+        }
+        if (!email.includes('@')) {
+            alert(currentLanguage === 'tr' ? 'Lütfen geçerli bir e-posta adresi girin.' : 'Please enter a valid email address.');
             return;
         }
 
-        let storedPlayerData = JSON.parse(localStorage.getItem(username));
-        if (!storedPlayerData) {
-            storedPlayerData = {
-                username: username,
-                balance: 5000,
-                lastLogin: new Date().toISOString()
-            };
-            localStorage.setItem(username, JSON.stringify(storedPlayerData));
-        }
-        playerData = storedPlayerData;
-
-        playerUsernameDisplay.textContent = playerData.username;
-        balanceDisplay.textContent = playerData.balance;
-
-        populateGrid();
-
+        // 1. Giriş ekranını gizle, YÜKLEME EKRANINI GÖSTER
         loginScreen.classList.add('hidden');
-        gameScreen.classList.remove('hidden');
-        gameScreen.style.display = 'flex';
+        loadingScreen.classList.remove('hidden');
+        loadingScreen.style.display = 'flex';
+
+
+        // 2. Yükleniyormuş gibi yap ve sonra oyunu başlat
+        setTimeout(() => {
+            let storedPlayerData = JSON.parse(localStorage.getItem(username));
+            if (!storedPlayerData) {
+                storedPlayerData = {
+                    username: username,
+                    email: email, // E-postayı kaydet
+                    balance: 5000,
+                    lastLogin: new Date().toISOString()
+                };
+                localStorage.setItem(username, JSON.stringify(storedPlayerData));
+            }
+            playerData = storedPlayerData;
+
+            playerUsernameDisplay.textContent = playerData.username;
+            balanceDisplay.textContent = playerData.balance;
+
+            populateGrid();
+
+            // 3. Yükleme ekranını gizle, OYUN EKRANINI GÖSTER
+            loadingScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            gameScreen.style.display = 'flex';
+        }, 2000); // 2 saniye bekleme süresi
     });
 
-    // Çevirme (Spin) Mantığı
-    spinButton.addEventListener('click', () => {
-        const currentBet = parseInt(betAmountDisplay.textContent);
-        if (playerData.balance < currentBet) {
-            alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
-            return;
-        }
-
-        playerData.balance -= currentBet;
-        balanceDisplay.textContent = playerData.balance;
-        localStorage.setItem(playerData.username, JSON.stringify(playerData));
-        
-        populateGrid();
-    });
-
+    // Çevirme (Spin) Mantığı (aynı)
+    // ...
 });
