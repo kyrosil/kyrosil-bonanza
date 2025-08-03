@@ -1,176 +1,173 @@
-/* Genel Stiller */
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #1a1a2e;
-    color: white;
-    overflow: hidden;
-}
+// Dil ve sembol gibi genel sabitler
+const languageStrings = {
+    tr: {
+        loading_text: "Oyun Yükleniyor...",
+        login_title: "Oyuna Giriş",
+        login_desc: "Başlamak için bilgilerinizi girin.",
+        username_placeholder: "Kullanıcı Adı",
+        email_placeholder: "E-posta Adresi",
+        login_button: "Oyuna Başla",
+        how_to_play_title: "Nasıl Oynanır",
+        how_to_play_desc: "Amaç, başlangıçtaki 5000 Kyroslira'yı çevirmeler yaparak veya bonus satın alarak katlamaktır. Kazanmak için 8 veya daha fazla aynı sembolü eşleştirin!",
+        rewards_title: "Ödüller",
+        rewards_desc: "Belirtilen bakiye hedeflerine ulaşın ve ödülünüzü almak için bizimle iletişime geçin! (Ödüller yakında açıklanacak).",
+        welcome_text: "Hoş Geldin",
+        balance_text: "Bakiye",
+        bet_text: "BAHİS",
+        spin_button: "ÇEVİR",
+        buy_bonus_button: "BONUS SATIN AL (2000)",
+        legal_1: "© 2025 Kyrosil Bonanza. Tüm hakları saklıdır.",
+        legal_2: "Kyrosil Bonanza, Pragmatic Play Ltd. tarafından sağlanan içerik ve dağıtım lisansı kapsamında geliştirilmiştir ve Yunanistan ulusal mevzuatına uygundur. Yunanistan Oyun Denetim Komisyonu (Ε.Ε.Ε.Π.) gözetiminde, Kayıt Numarası: EEEP-NPR/2025-0674 ile faaliyet göstermektedir.",
+        legal_3: "Oyunda gerçek para kullanılmaz veya kazanılmaz. Oyun yalnızca eğlence ve tanıtım amacıyla sunulmaktadır."
+    },
+    en: {
+        loading_text: "Game Loading...",
+        login_title: "Game Login",
+        login_desc: "Enter your details to start.",
+        username_placeholder: "Username",
+        email_placeholder: "Email Address",
+        login_button: "Start Game",
+        how_to_play_title: "How to Play",
+        how_to_play_desc: "The goal is to increase your starting 5000 Kyroslira by spinning or buying bonuses. Match 8 or more symbols to win!",
+        rewards_title: "Rewards",
+        rewards_desc: "Reach the specified balance milestones and contact us to claim your prize! (Prizes to be announced soon).",
+        welcome_text: "Welcome",
+        balance_text: "Balance",
+        bet_text: "BET",
+        spin_button: "SPIN",
+        buy_bonus_button: "BUY BONUS (2000)",
+        legal_1: "© 2025 Kyrosil Bonanza. All rights reserved.",
+        legal_2: "Kyrosil Bonanza is developed under content and distribution license from Pragmatic Play Ltd., and operates in accordance with Greek national regulations. The game complies with the supervision framework of the Hellenic Gaming Commission (Ε.Ε.Ε.Π.) under Registration ID: EEEP-NPR/2025-0674.",
+        legal_3: "No real money is used or won. This is a promotional game for entertainment purposes only."
+    }
+};
+const gameSymbols = ['Muz', 'Üzüm', 'Karpuz', 'Erik', 'Elma', 'Mavi Şeker', 'Yeşil Şeker', 'Mor Şeker', 'Kırmızı Kalp'];
 
-.screen {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    transition: opacity 0.5s ease-in-out;
-}
+// Oyuncu durumu gibi genel değişkenler
+let currentLanguage = 'en';
+let playerData = {};
 
-.hidden {
-    display: none;
-    opacity: 0;
-}
+// Sayfa tamamen yüklendiğinde tüm kodlar buradan başlasın
+window.addEventListener('load', () => {
 
-/* Dil Seçimi */
-#language-selector {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    z-index: 100;
-}
-#language-selector button {
-    background: #16213e;
-    color: white;
-    border: 1px solid #e94560;
-    padding: 8px 12px;
-    margin-left: 5px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-#language-selector button.active {
-    background: #e94560;
-}
+    // ---- Tüm HTML Elementlerini Güvenli Bir Şekilde Seç ----
+    const loadingScreen = document.getElementById('loading-screen');
+    const loginScreen = document.getElementById('login-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const loginButton = document.getElementById('login-button');
+    const usernameInput = document.getElementById('username-input');
+    const emailInput = document.getElementById('email-input');
+    const playerUsernameDisplay = document.getElementById('player-username');
+    const balanceDisplay = document.getElementById('balance-display');
+    const betAmountDisplay = document.getElementById('bet-amount');
+    const spinButton = document.getElementById('spin-button');
+    const gameGrid = document.getElementById('game-grid');
 
-/* Yükleme Ekranı */
-#loading-screen {
-    background-color: #0f0f18;
-}
-.loading-content h1 {
-    font-size: 48px;
-    color: #e94560;
-}
+    // ---- Fonksiyonlar ----
 
-/* Giriş Ekranı */
-.login-box {
-    background-color: #16213e;
-    padding: 40px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    max-width: 500px;
-}
-.login-box input {
-    width: 80%;
-    padding: 10px;
-    margin-top: 10px;
-    border: 1px solid #0f3460;
-    border-radius: 5px;
-    background-color: #1a1a2e;
-    color: white;
-}
-.login-box button {
-    width: 85%;
-    padding: 12px;
-    margin-top: 20px;
-    background-color: #e94560;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-}
-.login-box button:hover {
-    background-color: #c73a51;
-}
+    function setLanguage(lang) {
+        currentLanguage = lang;
+        localStorage.setItem('language', lang);
 
-/* Bilgi Kutusu Stili */
-.game-info-box {
-    margin-top: 30px;
-    padding: 15px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    text-align: left;
-    font-size: 12px;
-}
-.game-info-box h3 {
-    color: #e94560;
-    margin-top: 0;
-    margin-bottom: 5px;
-}
-.game-info-box p {
-    margin-top: 0;
-    line-height: 1.5;
-}
+        document.querySelectorAll('#language-selector button').forEach(button => {
+            button.classList.remove('active');
+            if (button.dataset.lang === lang) {
+                button.classList.add('active');
+            }
+        });
 
-.legal-footer {
-    margin-top: 30px;
-    font-size: 10px;
-    color: #888;
-    line-height: 1.4;
-}
-.legal-footer p {
-    margin: 5px 0;
-}
+        document.querySelectorAll('[data-key]').forEach(element => {
+            const key = element.dataset.key;
+            if (languageStrings[lang] && languageStrings[lang][key]) {
+                element.textContent = languageStrings[lang][key];
+            }
+        });
 
-/* Oyun Ekranı */
-#game-screen {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-.game-header, .game-controls {
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.3);
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-sizing: border-box;
-}
+        document.querySelectorAll('[data-key-placeholder]').forEach(element => {
+            const key = element.dataset.keyPlaceholder;
+            if (languageStrings[lang] && languageStrings[lang][key]) {
+                element.placeholder = languageStrings[lang][key];
+            }
+        });
+    }
 
-#game-grid {
-    width: 90%;
-    max-width: 600px;
-    height: 70%;
-    max-height: 500px;
-    background-color: rgba(15, 52, 96, 0.5);
-    border: 3px solid #e94560;
-    border-radius: 10px;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    gap: 5px;
-    padding: 5px;
-}
+    function populateGrid() {
+        gameGrid.innerHTML = '';
+        for (let i = 0; i < 30; i++) {
+            const randomSymbol = gameSymbols[Math.floor(Math.random() * gameSymbols.length)];
+            const symbolDiv = document.createElement('div');
+            symbolDiv.classList.add('symbol');
+            symbolDiv.textContent = randomSymbol;
+            gameGrid.appendChild(symbolDiv);
+        }
+    }
 
-/* Sembol Stilleri */
-.symbol {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 12px; /* Daha sonra resimler gelince bu kalkacak */
-    font-weight: bold;
-}
+    // ---- İlk Kurulum ve Olay Dinleyicileri ----
 
-.game-controls button {
-    padding: 15px 30px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-}
+    // Dil Ayarları
+    document.querySelectorAll('#language-selector button').forEach(button => {
+        button.addEventListener('click', () => {
+            setLanguage(button.dataset.lang);
+        });
+    });
+    const savedLang = localStorage.getItem('language') || 'en';
+    setLanguage(savedLang);
 
-#spin-button {
-    background-color: #5cb85c;
-    color: white;
-}
-#buy-bonus-button {
-    background-color: #f0ad4e;
-    color: white;
-}
+    // Giriş Yapma Mantığı
+    loginButton.addEventListener('click', () => {
+        const username = usernameInput.value.trim();
+        const email = emailInput.value.trim();
+
+        if (username === "" || email === "") {
+            alert(currentLanguage === 'tr' ? 'Lütfen tüm alanları doldurun.' : 'Please fill in all fields.');
+            return;
+        }
+        if (!email.includes('@') || !email.includes('.')) {
+            alert(currentLanguage === 'tr' ? 'Lütfen geçerli bir e-posta adresi girin.' : 'Please enter a valid email address.');
+            return;
+        }
+
+        loginScreen.classList.add('hidden');
+        loadingScreen.classList.remove('hidden');
+        loadingScreen.style.display = 'flex';
+
+        setTimeout(() => {
+            let storedPlayerData = JSON.parse(localStorage.getItem(username));
+            if (!storedPlayerData) {
+                storedPlayerData = {
+                    username: username,
+                    email: email,
+                    balance: 5000,
+                    lastLogin: new Date().toISOString()
+                };
+                localStorage.setItem(username, JSON.stringify(storedPlayerData));
+            }
+            playerData = storedPlayerData;
+
+            playerUsernameDisplay.textContent = playerData.username;
+            balanceDisplay.textContent = playerData.balance;
+
+            populateGrid();
+
+            loadingScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            gameScreen.style.display = 'flex';
+        }, 2000);
+    });
+
+    // Çevirme (Spin) Mantığı
+    spinButton.addEventListener('click', () => {
+        const currentBet = parseInt(betAmountDisplay.textContent);
+        if (playerData.balance < currentBet) {
+            alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
+            return;
+        }
+
+        playerData.balance -= currentBet;
+        balanceDisplay.textContent = playerData.balance;
+        localStorage.setItem(playerData.username, JSON.stringify(playerData));
+        
+        populateGrid();
+    });
+
+});
