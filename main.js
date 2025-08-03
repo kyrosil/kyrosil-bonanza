@@ -1,4 +1,3 @@
-// Dil ve sembol gibi genel sabitler
 const languageStrings = {
     tr: {
         loading_text: "Oyun Yükleniyor...",
@@ -43,14 +42,11 @@ const languageStrings = {
 };
 const gameSymbols = ['Muz', 'Üzüm', 'Karpuz', 'Erik', 'Elma', 'Mavi Şeker', 'Yeşil Şeker', 'Mor Şeker', 'Kırmızı Kalp'];
 
-// Oyuncu durumu gibi genel değişkenler
 let currentLanguage = 'en';
 let playerData = {};
 
-// Sayfa tamamen yüklendiğinde tüm kodlar buradan başlasın
 window.addEventListener('load', () => {
 
-    // ---- Tüm HTML Elementlerini Güvenli Bir Şekilde Seç ----
     const loadingScreen = document.getElementById('loading-screen');
     const loginScreen = document.getElementById('login-screen');
     const gameScreen = document.getElementById('game-screen');
@@ -62,8 +58,6 @@ window.addEventListener('load', () => {
     const betAmountDisplay = document.getElementById('bet-amount');
     const spinButton = document.getElementById('spin-button');
     const gameGrid = document.getElementById('game-grid');
-
-    // ---- Fonksiyonlar ----
 
     function setLanguage(lang) {
         currentLanguage = lang;
@@ -102,9 +96,6 @@ window.addEventListener('load', () => {
         }
     }
 
-    // ---- İlk Kurulum ve Olay Dinleyicileri ----
-
-    // Dil Ayarları
     document.querySelectorAll('#language-selector button').forEach(button => {
         button.addEventListener('click', () => {
             setLanguage(button.dataset.lang);
@@ -113,7 +104,6 @@ window.addEventListener('load', () => {
     const savedLang = localStorage.getItem('language') || 'en';
     setLanguage(savedLang);
 
-    // Giriş Yapma Mantığı
     loginButton.addEventListener('click', () => {
         const username = usernameInput.value.trim();
         const email = emailInput.value.trim();
@@ -155,7 +145,6 @@ window.addEventListener('load', () => {
         }, 2000);
     });
 
-    // Çevirme (Spin) Mantığı
     spinButton.addEventListener('click', () => {
         const currentBet = parseInt(betAmountDisplay.textContent);
         if (playerData.balance < currentBet) {
