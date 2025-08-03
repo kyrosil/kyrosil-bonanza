@@ -14,10 +14,7 @@ const languageStrings = {
         balance_text: "Bakiye",
         bet_text: "BAHİS",
         spin_button: "ÇEVİR",
-        buy_bonus_button: "BONUS SATIN AL (2000)",
-        legal_1: "© 2025 Kyrosil Bonanza. Tüm hakları saklıdır.",
-        legal_2: "Kyrosil Bonanza, Pragmatic Play Ltd. tarafından sağlanan içerik ve dağıtım lisansı kapsamında geliştirilmiştir ve Yunanistan ulusal mevzuatına uygundur. Yunanistan Oyun Denetim Komisyonu (Ε.Ε.Ε.Π.) gözetiminde, Kayıt Numarası: EEEP-NPR/2025-0674 ile faaliyet göstermektedir.",
-        legal_3: "Oyunda gerçek para kullanılmaz veya kazanılmaz. Oyun yalnızca eğlence ve tanıtım amacıyla sunulmaktadır."
+        buy_bonus_button: "★ BONUS SATIN AL"
     },
     en: {
         loading_text: "Game Loading...",
@@ -34,10 +31,7 @@ const languageStrings = {
         balance_text: "Balance",
         bet_text: "BET",
         spin_button: "SPIN",
-        buy_bonus_button: "BUY BONUS (2000)",
-        legal_1: "© 2025 Kyrosil Bonanza. All rights reserved.",
-        legal_2: "Kyrosil Bonanza is developed under content and distribution license from Pragmatic Play Ltd., and operates in accordance with Greek national regulations. The game complies with the supervision framework of the Hellenic Gaming Commission (Ε.Ε.Ε.Π.) under Registration ID: EEEP-NPR/2025-0674.",
-        legal_3: "No real money is used or won. This is a promotional game for entertainment purposes only."
+        buy_bonus_button: "★ BUY BONUS"
     }
 };
 const gameSymbols = ['Muz', 'Üzüm', 'Karpuz', 'Erik', 'Elma', 'Mavi Şeker', 'Yeşil Şeker', 'Mor Şeker', 'Kırmızı Kalp'];
@@ -47,6 +41,8 @@ let playerData = {};
 
 window.addEventListener('load', () => {
 
+    // ---- Tüm HTML Elementlerini Seç ----
+    const languageSelector = document.getElementById('language-selector');
     const loadingScreen = document.getElementById('loading-screen');
     const loginScreen = document.getElementById('login-screen');
     const gameScreen = document.getElementById('game-screen');
@@ -56,27 +52,33 @@ window.addEventListener('load', () => {
     const playerUsernameDisplay = document.getElementById('player-username');
     const balanceDisplay = document.getElementById('balance-display');
     const betAmountDisplay = document.getElementById('bet-amount');
+    const betIncreaseButton = document.getElementById('bet-increase');
+    const betDecreaseButton = document.getElementById('bet-decrease');
     const spinButton = document.getElementById('spin-button');
+    const buyBonusButton = document.getElementById('buy-bonus-button');
     const gameGrid = document.getElementById('game-grid');
+
+    // ---- OYUN AYARLARI ----
+    const betLevels = [20, 50, 100, 200, 500, 1000];
+    let currentBetIndex = 2;
+
+    // ---- Fonksiyonlar ----
 
     function setLanguage(lang) {
         currentLanguage = lang;
         localStorage.setItem('language', lang);
-
         document.querySelectorAll('#language-selector button').forEach(button => {
             button.classList.remove('active');
             if (button.dataset.lang === lang) {
                 button.classList.add('active');
             }
         });
-
         document.querySelectorAll('[data-key]').forEach(element => {
             const key = element.dataset.key;
             if (languageStrings[lang] && languageStrings[lang][key]) {
                 element.textContent = languageStrings[lang][key];
             }
         });
-
         document.querySelectorAll('[data-key-placeholder]').forEach(element => {
             const key = element.dataset.keyPlaceholder;
             if (languageStrings[lang] && languageStrings[lang][key]) {
@@ -96,6 +98,14 @@ window.addEventListener('load', () => {
         }
     }
 
+    function updateBetDisplay() {
+        betAmountDisplay.textContent = betLevels[currentBetIndex];
+    }
+    
+    // ---- İlk Kurulum ve Olay Dinleyicileri ----
+    
+    updateBetDisplay();
+
     document.querySelectorAll('#language-selector button').forEach(button => {
         button.addEventListener('click', () => {
             setLanguage(button.dataset.lang);
@@ -107,7 +117,6 @@ window.addEventListener('load', () => {
     loginButton.addEventListener('click', () => {
         const username = usernameInput.value.trim();
         const email = emailInput.value.trim();
-
         if (username === "" || email === "") {
             alert(currentLanguage === 'tr' ? 'Lütfen tüm alanları doldurun.' : 'Please fill in all fields.');
             return;
@@ -118,6 +127,7 @@ window.addEventListener('load', () => {
         }
 
         loginScreen.classList.add('hidden');
+        languageSelector.classList.add('hidden');
         loadingScreen.classList.remove('hidden');
         loadingScreen.style.display = 'flex';
 
@@ -133,29 +143,52 @@ window.addEventListener('load', () => {
                 localStorage.setItem(username, JSON.stringify(storedPlayerData));
             }
             playerData = storedPlayerData;
-
             playerUsernameDisplay.textContent = playerData.username;
             balanceDisplay.textContent = playerData.balance;
-
             populateGrid();
-
             loadingScreen.classList.add('hidden');
             gameScreen.classList.remove('hidden');
             gameScreen.style.display = 'flex';
         }, 2000);
     });
 
+    betIncreaseButton.addEventListener('click', () => {
+        if (currentBetIndex < betLevels.length - 1) {
+            currentBetIndex++;
+            updateBetDisplay();
+        }
+    });
+
+    betDecreaseButton.addEventListener('click', () => {
+        if (currentBetIndex > 0) {
+            currentBetIndex--;
+            updateBetDisplay();
+        }
+    });
+
     spinButton.addEventListener('click', () => {
-        const currentBet = parseInt(betAmountDisplay.textContent);
+        const currentBet = betLevels[currentBetIndex];
         if (playerData.balance < currentBet) {
             alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
             return;
         }
-
         playerData.balance -= currentBet;
         balanceDisplay.textContent = playerData.balance;
         localStorage.setItem(playerData.username, JSON.stringify(playerData));
-        
+        populateGrid();
+    });
+
+    buyBonusButton.addEventListener('click', () => {
+        const currentBet = betLevels[currentBetIndex];
+        const bonusCost = currentBet * 100;
+        if (playerData.balance < bonusCost) {
+            alert(currentLanguage === 'tr' ? `Yetersiz bakiye! Bonus için ${bonusCost} Kyroslira gerekli.` : `Insufficient balance! Bonus requires ${bonusCost} Kyroslira.`);
+            return;
+        }
+        playerData.balance -= bonusCost;
+        balanceDisplay.textContent = playerData.balance;
+        localStorage.setItem(playerData.username, JSON.stringify(playerData));
+        alert(currentLanguage === 'tr' ? 'Bonus Turu Başlıyor!' : 'Bonus Round Starting!');
         populateGrid();
     });
 
