@@ -22,42 +22,33 @@
     </div>
 
     <div id="login-screen" class="screen">
-        <div class="login-box">
-            <h2 data-key="login_title">Game Login</h2>
-            <p data-key="login_desc">Enter your details to start.</p>
-            
-            <input type="text" id="username-input" data-key-placeholder="username_placeholder" placeholder="Username">
-            <input type="email" id="email-input" data-key-placeholder="email_placeholder" placeholder="Email Address">
-            <button id="login-button" data-key="login_button">Start Game</button>
-            
-            <div class="game-info-box">
-                <h3 data-key="how_to_play_title">How to Play</h3>
-                <p data-key="how_to_play_desc">The goal is to increase your starting 5000 Kyroslira by spinning or buying bonuses. Match 8 or more symbols to win!</p>
-                <h3 data-key="rewards_title">Rewards</h3>
-                <p data-key="rewards_desc">Reach the specified balance milestones and contact us to claim your prize! (Prizes to be announced soon).</p>
-            </div>
-
-            <footer class="legal-footer">
-                <p data-key="legal_1">© 2025 Kyrosil Bonanza. All rights reserved.</p>
-                <p data-key="legal_2">Kyrosil Bonanza is developed under content and distribution license from Pragmatic Play Ltd., and operates in accordance with Greek national regulations. The game complies with the supervision framework of the Hellenic Gaming Commission (Ε.Ε.Ε.Π.) under Registration ID: EEEP-NPR/2025-0674.</p>
-                <p data-key="legal_3">No real money is used or won. This is a promotional game for entertainment purposes only.</p>
-            </footer>
         </div>
-    </div>
 
     <div id="game-screen" class="screen hidden">
         <div class="game-header">
             <div id="player-info"><span data-key="welcome_text">Welcome</span>, <span id="player-username"></span>!</div>
-            <div id="balance-info"><span data-key="balance_text">Balance</span>: <span id="balance-display">5000</span> Kyroslira</div>
-        </div>
-        <div id="game-grid"></div>
-        <div class="game-controls">
-            <div class="bet-control">
-                <span data-key="bet_text">BET</span>
-                <span id="bet-amount">100</span>
+            
+            <div class="balance-bet-panel">
+                <div class="balance-container">
+                    <span data-key="balance_text">Balance</span>
+                    <span id="balance-display">5000</span>
+                </div>
+                <div class="bet-container">
+                    <span data-key="bet_text">BET</span>
+                    <div class="bet-adjust">
+                        <button id="bet-decrease">-</button>
+                        <span id="bet-amount">100</span>
+                        <button id="bet-increase">+</button>
+                    </div>
+                </div>
             </div>
-            <button id="spin-button" data-key="spin_button">SPIN</button>
-            <button id="buy-bonus-button" data-key="buy_bonus_button">BUY BONUS (2000)</button>
+        </div>
+
+        <div id="game-grid"></div>
+
+        <div class="game-controls">
+            <button id="spin-button" title="Spin">&#x21bb;</button>
+            <button id="buy-bonus-button" data-key="buy_bonus_button">&#9733; BUY BONUS</button>
         </div>
     </div>
 
