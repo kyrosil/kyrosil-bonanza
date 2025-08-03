@@ -1,1 +1,135 @@
+/* Genel Stiller */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #1a1a2e;
+    color: white;
+    overflow: hidden;
+}
 
+.screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.hidden {
+    display: none;
+    opacity: 0;
+}
+
+/* Dil Seçimi */
+#language-selector {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 100;
+}
+#language-selector button {
+    background: #16213e;
+    color: white;
+    border: 1px solid #e94560;
+    padding: 8px 12px;
+    margin-left: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+#language-selector button.active {
+    background: #e94560;
+}
+
+/* Yükleme Ekranı */
+#loading-screen {
+    background-color: #0f0f18;
+}
+.loading-content h1 {
+    font-size: 48px;
+    color: #e94560;
+}
+
+/* Giriş Ekranı */
+.login-box {
+    background-color: #16213e;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+.login-box input {
+    width: 80%;
+    padding: 10px;
+    margin-top: 20px;
+    border: 1px solid #0f3460;
+    border-radius: 5px;
+    background-color: #1a1a2e;
+    color: white;
+}
+.login-box button {
+    width: 85%;
+    padding: 12px;
+    margin-top: 20px;
+    background-color: #e94560;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+.login-box button:hover {
+    background-color: #c73a51;
+}
+
+/* Oyun Ekranı */
+#game-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.game-header, .game-controls {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+#game-grid {
+    width: 90%;
+    max-width: 600px;
+    height: 70%;
+    max-height: 500px;
+    background-color: rgba(15, 52, 96, 0.5);
+    border: 3px solid #e94560;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 5px;
+    padding: 5px;
+}
+
+.game-controls button {
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+}
+
+#spin-button {
+    background-color: #5cb85c;
+    color: white;
+}
+#buy-bonus-button {
+    background-color: #f0ad4e;
+    color: white;
+}
