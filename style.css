@@ -28,7 +28,7 @@ body {
     position: absolute;
     top: 15px;
     right: 15px;
-    z-index: 100;
+    z-index: 100; /* Dil seçimi her zaman en üstte */
 }
 #language-selector button {
     background: #16213e;
@@ -46,6 +46,7 @@ body {
 /* Yükleme Ekranı */
 #loading-screen {
     background-color: #0f0f18;
+    z-index: 30; /* Yüklendiği an en üste çıkar */
 }
 .loading-content h1 {
     font-size: 48px;
@@ -53,6 +54,9 @@ body {
 }
 
 /* Giriş Ekranı */
+#login-screen {
+    z-index: 20; /* Başlangıçta en üstte olan ekran bu */
+}
 .login-box {
     background-color: #16213e;
     padding: 40px;
@@ -117,6 +121,7 @@ body {
 
 /* Oyun Ekranı */
 #game-screen {
+    z-index: 10; /* En alttaki katman */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -153,7 +158,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 12px; /* Daha sonra resimler gelince bu kalkacak */
+    font-size: 12px;
     font-weight: bold;
 }
 
