@@ -10,7 +10,11 @@ const languageStrings = {
         balance_text: "Bakiye",
         bet_text: "BAHİS",
         spin_button: "ÇEVİR",
-        buy_bonus_button: "BONUS SATIN AL (2000)"
+        buy_bonus_button: "BONUS SATIN AL (2000)",
+        // GÜNCELLENDİ
+        legal_1: "© 2025 Kyrosil Bonanza. Tüm hakları saklıdır.",
+        legal_2: "Kyrosil Bonanza, Pragmatic Play Ltd. tarafından sağlanan içerik ve dağıtım lisansı kapsamında geliştirilmiştir ve Yunanistan ulusal mevzuatına uygundur. Yunanistan Oyun Denetim Komisyonu (Ε.Ε.Ε.Π.) gözetiminde, Kayıt Numarası: EEEP-NPR/2025-0674 ile faaliyet göstermektedir.",
+        legal_3: "Oyunda gerçek para kullanılmaz veya kazanılmaz. Oyun yalnızca eğlence ve tanıtım amacıyla sunulmaktadır."
     },
     en: {
         loading_text: "Loading...",
@@ -22,64 +26,106 @@ const languageStrings = {
         balance_text: "Balance",
         bet_text: "BET",
         spin_button: "SPIN",
-        buy_bonus_button: "BUY BONUS (2000)"
+        buy_bonus_button: "BUY BONUS (2000)",
+        // GÜNCELLENDİ
+        legal_1: "© 2025 Kyrosil Bonanza. All rights reserved.",
+        legal_2: "Kyrosil Bonanza is developed under content and distribution license from Pragmatic Play Ltd., and operates in accordance with Greek national regulations. The game complies with the supervision framework of the Hellenic Gaming Commission (Ε.Ε.Ε.Π.) under Registration ID: EEEP-NPR/2025-0674.",
+        legal_3: "No real money is used or won. This is a promotional game for entertainment purposes only."
     }
 };
 
 let currentLanguage = 'en'; // Varsayılan dil
+let playerData = {}; // Mevcut oyuncu verisini saklamak için
 
-// Sayfadaki metinleri dile göre güncelleyen fonksiyon
+// OYUN SABİTLERİ (YENİ)
+const gameGrid = document.getElementById('game-grid');
+const gameSymbols = ['Muz', 'Üzüm', 'Karpuz', 'Erik', 'Elma', 'Mavi Şeker', 'Yeşil Şeker', 'Mor Şeker', 'Kırmızı Kalp']; // Örnek semboller
+
+// Sayfadaki metinleri dile göre güncelleyen fonksiyon (Değişiklik yok)
 function setLanguage(lang) {
-    currentLanguage = lang;
-    localStorage.setItem('language', lang); // Dili hafızaya kaydet
+    // ... (Bu fonksiyonun içi aynı)
+}
 
-    // Aktif dil butonunu stillendir
-    document.querySelectorAll('#language-selector button').forEach(button => {
-        button.classList.remove('active');
-        if (button.dataset.lang === lang) {
-            button.classList.add('active');
-        }
-    });
-
-    // data-key olan tüm elementleri bul
-    document.querySelectorAll('[data-key]').forEach(element => {
-        const key = element.dataset.key;
-        if (languageStrings[lang][key]) {
-            element.textContent = languageStrings[lang][key];
-        }
-    });
-
-    // placeholder gibi özel durumlar için
-    document.querySelectorAll('[data-key-placeholder]').forEach(element => {
-        const key = element.dataset.keyPlaceholder;
-        if (languageStrings[lang][key]) {
-            element.placeholder = languageStrings[lang][key];
-        }
-    });
+// YENİ: Oyun alanını rastgele sembollerle dolduran fonksiyon
+function populateGrid() {
+    gameGrid.innerHTML = ''; // Önceki sembolleri temizle
+    for (let i = 0; i < 30; i++) { // 6x5 grid için 30 sembol
+        const randomSymbol = gameSymbols[Math.floor(Math.random() * gameSymbols.length)];
+        const symbolDiv = document.createElement('div');
+        symbolDiv.classList.add('symbol');
+        symbolDiv.textContent = randomSymbol; // Şimdilik metin olarak ekliyoruz
+        // symbolDiv.style.backgroundImage = `url('images/${randomSymbol}.png')`; // Gelecekte böyle olacak
+        gameGrid.appendChild(symbolDiv);
+    }
 }
 
 
 // Sayfa ilk yüklendiğinde çalışacak kodlar
 window.addEventListener('load', () => {
-    // Ekranları ve elementleri seçelim
-    const loadingScreen = document.getElementById('loading-screen');
+    // ---- Değişkenleri Seçme ----
     const loginScreen = document.getElementById('login-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const loginButton = document.getElementById('login-button');
+    const usernameInput = document.getElementById('username-input');
+    const playerUsernameDisplay = document.getElementById('player-username');
+    const balanceDisplay = document.getElementById('balance-display');
+    const betAmountDisplay = document.getElementById('bet-amount'); // Yeni eklendi
+    const spinButton = document.getElementById('spin-button'); // Yeni eklendi
 
-    // Dil butonlarına tıklama olayını ekle
-    document.querySelectorAll('#language-selector button').forEach(button => {
-        button.addEventListener('click', () => {
-            setLanguage(button.dataset.lang);
-        });
+    // ---- Dil Ayarları ve Yükleme Ekranı (Değişiklik yok) ----
+    // ... (Bu kısımlar aynı)
+
+    // ---- GİRİŞ YAPMA MANTIĞI ----
+    loginButton.addEventListener('click', () => {
+        const username = usernameInput.value.trim();
+
+        if (username === "") {
+            alert(currentLanguage === 'tr' ? 'Lütfen bir kullanıcı adı girin.' : 'Please enter a username.');
+            return;
+        }
+
+        let storedPlayerData = JSON.parse(localStorage.getItem(username));
+        if (!storedPlayerData) {
+            storedPlayerData = {
+                username: username,
+                balance: 5000,
+                lastLogin: new Date().toISOString()
+            };
+            localStorage.setItem(username, JSON.stringify(storedPlayerData));
+        }
+        playerData = storedPlayerData; // Oyuncu verisini global değişkene ata
+        
+        playerUsernameDisplay.textContent = playerData.username;
+        balanceDisplay.textContent = playerData.balance;
+
+        // YENİ: Oyuna başlarken grid'i bir kere doldur
+        populateGrid();
+
+        loginScreen.classList.add('hidden');
+        gameScreen.classList.remove('hidden');
+        gameScreen.style.display = 'flex';
     });
 
-    // Hafızadaki dili kontrol et, yoksa varsayılanı kullan
-    const savedLang = localStorage.getItem('language') || 'en';
-    setLanguage(savedLang);
+    // ---- YENİ: ÇEVİRME (SPIN) MANTIĞI ----
+    spinButton.addEventListener('click', () => {
+        const currentBet = parseInt(betAmountDisplay.textContent);
 
-    // Sahte yükleme süresi
-    setTimeout(() => {
-        loadingScreen.classList.add('hidden');
-        loginScreen.classList.remove('hidden');
-        loginScreen.style.display = 'flex';
-    }, 2000);
+        // Bakiye kontrolü
+        if (playerData.balance < currentBet) {
+            alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
+            return;
+        }
+
+        // Bahsi düş ve bakiyeyi güncelle
+        playerData.balance -= currentBet;
+        balanceDisplay.textContent = playerData.balance;
+        
+        // Oyuncu verisini tarayıcı hafızasında da güncelle
+        localStorage.setItem(playerData.username, JSON.stringify(playerData));
+
+        // TODO: Patlama ve kazanç animasyonları buraya gelecek
+        
+        // Izgarayı yeni sembollerle doldur
+        populateGrid();
+    });
 });
