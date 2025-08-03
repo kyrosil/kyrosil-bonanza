@@ -12,7 +12,7 @@ body {
     background-color: var(--dark-bg);
     color: var(--text-color);
     overflow: hidden;
-    -webkit-user-select: none; /* Metin seçimini engelle */
+    -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
@@ -30,7 +30,7 @@ body {
 }
 
 .hidden {
-    display: none !important; /* Her zaman gizli olmasını garantiler */
+    display: none !important;
     opacity: 0;
 }
 
@@ -44,14 +44,95 @@ body {
 }
 #language-selector button {
     background: var(--dark-secondary);
+    color: var(--text-color);
     border: 1px solid var(--primary-color);
-    /* Diğer stiller aynı */
+    padding: 8px 12px;
+    margin-left: 5px;
+    cursor: pointer;
+    border-radius: 5px;
 }
-#language-selector button.active { background: var(--primary-color); }
+#language-selector button.active {
+    background: var(--primary-color);
+}
 
+/* Yükleme Ekranı */
+#loading-screen {
+    background-color: #0f0f18;
+    z-index: 30;
+}
+.loading-content h1 {
+    font-size: 48px;
+    color: var(--primary-color);
+}
 
-/* Giriş Ekranı (Stilleri aynı) */
-/* ... */
+/* Giriş Ekranı */
+#login-screen {
+    z-index: 20;
+    overflow-y: auto; /* İçerik taşarsa kaydırma çubuğu çıkar */
+    padding: 20px 0;
+}
+.login-box {
+    background-color: var(--dark-secondary);
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    max-width: 500px;
+    width: 90%;
+}
+.login-box input {
+    width: 80%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #0f3460;
+    border-radius: 5px;
+    background-color: var(--dark-bg);
+    color: var(--text-color);
+}
+.login-box button {
+    width: 85%;
+    padding: 12px;
+    margin-top: 20px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+.login-box button:hover {
+    background-color: #c73a51;
+}
+
+/* Bilgi Kutusu Stili */
+.game-info-box {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    text-align: left;
+    font-size: 12px;
+}
+.game-info-box h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+.game-info-box p {
+    margin-top: 0;
+    line-height: 1.5;
+}
+
+.legal-footer {
+    margin-top: 30px;
+    font-size: 10px;
+    color: #888;
+    line-height: 1.4;
+}
+.legal-footer p {
+    margin: 5px 0;
+}
 
 /* Oyun Ekranı */
 #game-screen {
@@ -61,6 +142,7 @@ body {
     justify-content: space-between;
     padding: 10px;
     box-sizing: border-box;
+    gap: 10px;
 }
 
 .game-header {
@@ -70,9 +152,10 @@ body {
     align-items: center;
     padding: 0 10px;
     box-sizing: border-box;
+    flex-wrap: wrap; /* Ekran küçülünce sığmazsa alt satıra atar */
+    gap: 10px;
 }
 
-/* YENİ: Bakiye ve Bahis Paneli */
 .balance-bet-panel {
     display: flex;
     background-color: rgba(0,0,0,0.3);
@@ -111,12 +194,15 @@ body {
     cursor: pointer;
     padding: 0;
     line-height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #game-grid {
     width: 100%;
-    max-width: 80vh; /* Gridin çok genişlemesini engelle */
-    aspect-ratio: 6 / 5; /* Oranı koru */
+    max-width: 80vh;
+    aspect-ratio: 6 / 5;
     background-color: rgba(15, 52, 96, 0.5);
     border: 3px solid var(--primary-color);
     border-radius: 10px;
@@ -125,10 +211,18 @@ body {
     grid-template-rows: repeat(5, 1fr);
     gap: 5px;
     padding: 5px;
-    margin: 10px 0;
 }
 
-/* Kontrol Paneli */
+.symbol {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
 .game-controls {
     width: 100%;
     display: flex;
@@ -147,6 +241,7 @@ body {
     border: 5px solid rgba(255,255,255,0.5);
     line-height: 1;
     padding-bottom: 5px;
+    cursor: pointer;
 }
 
 #buy-bonus-button {
@@ -156,12 +251,13 @@ body {
     font-size: 16px;
     border-radius: 25px;
     font-weight: bold;
+    border: none;
+    cursor: pointer;
 }
 
-/* YENİ: MOBİL UYUM */
+/* MOBİL UYUM */
 @media (max-width: 768px) {
     .login-box {
-        width: 90%;
         padding: 20px;
     }
 
