@@ -214,6 +214,33 @@ body {
     position: relative;
 }
 
+#bonus-overlay {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    padding: 10px;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 0 0 10px 10px;
+    z-index: 15;
+}
+.bonus-info-box {
+    text-align: center;
+    color: white;
+}
+.bonus-info-box span {
+    display: block;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+#total-bonus-win-amount, #free-spins-count {
+    font-size: 24px;
+    font-weight: bold;
+    color: gold;
+}
+
 .symbol {
     border-radius: 5px;
     display: flex;
@@ -224,6 +251,7 @@ body {
     opacity: 1;
     transform: translateY(0);
     transition: transform 0.3s ease-in-out;
+    position: relative;
 }
 
 .symbol.winning {
@@ -244,9 +272,17 @@ body {
     user-select: none;
 }
 
-/* YENİ: Şeftaliyi küçültmek için özel kural */
 .symbol img[alt="peach"] {
     transform: scale(0.85);
+}
+
+.multiplier-value {
+    position: absolute;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 5px black, 0 0 10px black;
+    pointer-events: none;
 }
 
 @keyframes dropIn {
@@ -557,4 +593,16 @@ input:checked + .slider:before {
 
 #info-page-indicator {
     font-weight: bold;
+}
+
+.bonus-trigger-img {
+    width: 100px;
+    height: 100px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }
