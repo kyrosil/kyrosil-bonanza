@@ -34,14 +34,25 @@ const languageStrings = {
         buy_bonus_button: "★ BUY BONUS"
     }
 };
-const gameSymbols = ['Muz', 'Üzüm', 'Karpuz', 'Erik', 'Elma', 'Mavi Şeker', 'Yeşil Şeker', 'Mor Şeker', 'Kırmızı Kalp'];
+const gameSymbols = [
+    { name: 'banana', file: 'symbol_banana.png', type: 'normal' },
+    { name: 'watermelon', file: 'symbol_watermelon.png', type: 'normal' },
+    { name: 'cucumber', file: 'symbol_cucumber.png', type: 'normal' },
+    { name: 'apple', file: 'symbol_apple.png', type: 'normal' },
+    { name: 'peach', file: 'symbol_peach.png', type: 'normal' },
+    { name: 'cherry', file: 'symbol_cherry.png', type: 'normal' },
+    { name: 'gem_green', file: 'symbol_gem_green.png', type: 'normal' },
+    { name: 'gem_purple', file: 'symbol_gem_purple.png', type: 'normal' },
+    { name: 'heart_red', file: 'symbol_heart_red.png', type: 'normal' },
+    { name: 'scatter', file: 'scatter.png', type: 'scatter' },
+    { name: 'multiplier', file: 'multiplier_bomb.png', type: 'multiplier' }
+];
 
 let currentLanguage = 'en';
 let playerData = {};
 
 window.addEventListener('load', () => {
 
-    // ---- Tüm HTML Elementlerini Seç ----
     const languageSelector = document.getElementById('language-selector');
     const loadingScreen = document.getElementById('loading-screen');
     const loginScreen = document.getElementById('login-screen');
@@ -58,11 +69,8 @@ window.addEventListener('load', () => {
     const buyBonusButton = document.getElementById('buy-bonus-button');
     const gameGrid = document.getElementById('game-grid');
 
-    // ---- OYUN AYARLARI ----
     const betLevels = [20, 50, 100, 200, 500, 1000];
     let currentBetIndex = 2;
-
-    // ---- Fonksiyonlar ----
 
     function setLanguage(lang) {
         currentLanguage = lang;
@@ -90,10 +98,14 @@ window.addEventListener('load', () => {
     function populateGrid() {
         gameGrid.innerHTML = '';
         for (let i = 0; i < 30; i++) {
-            const randomSymbol = gameSymbols[Math.floor(Math.random() * gameSymbols.length)];
+            const randomSymbolData = gameSymbols[Math.floor(Math.random() * 9)];
             const symbolDiv = document.createElement('div');
             symbolDiv.classList.add('symbol');
-            symbolDiv.textContent = randomSymbol;
+            const symbolImg = document.createElement('img');
+            symbolImg.src = randomSymbolData.file; 
+            symbolImg.alt = randomSymbolData.name;
+            symbolDiv.style.animationDelay = `${(i * 0.02)}s`;
+            symbolDiv.appendChild(symbolImg);
             gameGrid.appendChild(symbolDiv);
         }
     }
@@ -101,8 +113,6 @@ window.addEventListener('load', () => {
     function updateBetDisplay() {
         betAmountDisplay.textContent = betLevels[currentBetIndex];
     }
-    
-    // ---- İlk Kurulum ve Olay Dinleyicileri ----
     
     updateBetDisplay();
 
