@@ -17,7 +17,10 @@
     <div id="loading-screen" class="screen hidden">
         <div class="loading-content">
             <h1>Kyros Play</h1>
-            <p data-key="loading_text">Game Loading...</p>
+            <div class="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <span id="loading-percentage">0%</span>
         </div>
     </div>
 
@@ -134,6 +137,15 @@
             <h2 data-key="bonus_won_title">FEATURE TRIGGERED</h2>
             <p data-key="bonus_won_desc">You won 10 Free Spins!</p>
             <button id="start-bonus-button" class="modal-button confirm" data-key="bonus_start_button">Start</button>
+        </div>
+    </div>
+
+    <div id="bonus-end-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 data-key="bonus_end_title">CONGRATULATIONS</h2>
+            <p data-key="bonus_end_desc">You won a total of</p>
+            <span id="final-bonus-win-amount">0</span>
+            <button id="close-bonus-end-button" class="modal-button confirm" data-key="bonus_end_close">Continue</button>
         </div>
     </div>
 
