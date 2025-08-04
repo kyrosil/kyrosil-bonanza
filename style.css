@@ -223,6 +223,17 @@ body {
     box-sizing: border-box;
     animation: dropIn 0.5s ease-out forwards;
     opacity: 0;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.symbol.winning {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px gold;
+    background-color: rgba(255, 215, 0, 0.3);
+}
+
+.symbol.disappearing {
+    animation: disappear 0.3s ease-in forwards;
 }
 
 .symbol img {
@@ -244,6 +255,17 @@ body {
     }
 }
 
+@keyframes disappear {
+    from {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    to {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
 .game-controls {
     width: 100%;
     display: flex;
@@ -251,6 +273,22 @@ body {
     align-items: center;
     gap: 20px;
 }
+
+#spin-win-display {
+    background-color: rgba(0,0,0,0.5);
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+#spin-win-display span {
+    display: block;
+}
+#spin-win-amount {
+    font-size: 24px;
+    color: gold;
+    font-weight: bold;
+}
+
 
 #spin-button {
     background-color: #5cb85c;
