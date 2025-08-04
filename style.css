@@ -211,19 +211,21 @@ body {
     grid-template-rows: repeat(5, 1fr);
     gap: 5px;
     padding: 5px;
+    position: relative;
 }
 
 .symbol {
-    background-color: rgba(255, 255, 255, 0.1);
+    /* background-color kaldırıldı, artık grid'in kendi arkaplanı var */
     border-radius: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 5px;
     box-sizing: border-box;
-    animation: dropIn 0.5s ease-out forwards;
-    opacity: 0;
-    transition: transform 0.2s, box-shadow 0.2s;
+    /* Animasyonlar artık JS ile yönetilecek */
+    opacity: 1; /* Başlangıçta görünür */
+    transform: translateY(0); /* Başlangıç pozisyonu */
+    transition: transform 0.3s ease-in-out; /* YENİ: Kayma animasyonu */
 }
 
 .symbol.winning {
@@ -279,6 +281,7 @@ body {
     padding: 10px 20px;
     border-radius: 10px;
     text-align: center;
+    min-width: 100px; /* Genişliğin sürekli değişmesini engeller */
 }
 #spin-win-display span {
     display: block;
