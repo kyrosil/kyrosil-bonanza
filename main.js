@@ -18,7 +18,15 @@ const languageStrings = {
         bonus_modal_title: "Satın Alımı Onayla",
         bonus_modal_text_1: "Bonus Özelliğini",
         bonus_modal_confirm: "Evet, Satın Al",
-        bonus_modal_cancel: "Vazgeç"
+        bonus_modal_cancel: "Vazgeç",
+        info_p1_title: "Sembol Ödemeleri",
+        info_p2_title: "Oyun Özellikleri",
+        info_p3_title: "Çarpan Sembolleri",
+        info_scatter_pays: "Herhangi bir yerde öder",
+        info_tumble_feature: "Tumble Özelliği",
+        info_tumble_desc: "Her spinden sonra, kazanan kombinasyonlar ödenir ve kazanan semboller kaybolur. Kalan semboller ekranın altına düşer ve boş pozisyonlar yukarıdan gelen yeni sembollerle doldurulur.",
+        info_freespins_feature: "Bonus Turu",
+        info_freespins_desc: "Ekranda 4 veya daha fazla SCATTER sembolü belirdiğinde Bonus Turu özelliği tetiklenir. Tur 10 bedava çevirme ile başlar.",
     },
     en: {
         loading_text: "Game Loading...",
@@ -39,7 +47,15 @@ const languageStrings = {
         bonus_modal_title: "Confirm Purchase",
         bonus_modal_text_1: "Do you want to buy the Bonus Feature for",
         bonus_modal_confirm: "Yes, Buy",
-        bonus_modal_cancel: "Cancel"
+        bonus_modal_cancel: "Cancel",
+        info_p1_title: "Symbol Payouts",
+        info_p2_title: "Game Features",
+        info_p3_title: "Multiplier Symbols",
+        info_scatter_pays: "Pays on any position",
+        info_tumble_feature: "Tumble Feature",
+        info_tumble_desc: "After every spin, winning combinations are paid and winning symbols disappear. The remaining symbols fall to the bottom of the screen and the empty positions are replaced with new symbols coming from above.",
+        info_freespins_feature: "Bonus Round Feature",
+        info_freespins_desc: "The Bonus Round feature is triggered when 4 or more SCATTER symbols hit anywhere on the screen. The round starts with 10 free spins.",
     }
 };
 
@@ -98,9 +114,18 @@ window.addEventListener('load', () => {
     const cancelBuyButton = document.getElementById('cancel-buy-button');
     const spinWinDisplay = document.getElementById('spin-win-display');
     const spinWinAmount = document.getElementById('spin-win-amount');
+    const infoButton = document.getElementById('info-button');
+    const infoModal = document.getElementById('info-modal');
+    const closeInfoModalButton = document.getElementById('close-info-modal');
+    const infoPagesContainer = document.getElementById('info-pages-container');
+    const infoPrevButton = document.getElementById('info-prev-button');
+    const infoNextButton = document.getElementById('info-next-button');
+    const infoPageIndicator = document.getElementById('info-page-indicator');
 
     const betLevels = [20, 50, 100, 200, 500, 1000];
     let currentBetIndex = 2;
+    let infoCurrentPage = 1;
+    const infoTotalPages = 3;
     
     const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -194,7 +219,7 @@ window.addEventListener('load', () => {
         winningIndices.forEach(index => {
             gridElements[index].classList.remove('winning');
             gridElements[index].classList.add('disappearing');
-            promises.push(wait(500)); // Yavaşlatılan kaybolma animasyonu
+            promises.push(wait(300));
         });
         await Promise.all(promises);
 
@@ -202,41 +227,50 @@ window.addEventListener('load', () => {
             currentGridSymbols[index] = null;
         });
 
-        const newSymbolElements = [];
         for (let col = 0; col < 6; col++) {
-            const columnSymbols = [];
+            let emptySlots = 0;
             for (let row = 4; row >= 0; row--) {
                 const index = row * 6 + col;
-                if (currentGridSymbols[index]) {
-                    columnSymbols.push(currentGridSymbols[index]);
+                if (currentGridSymbols[index] === null) {
+                    emptySlots++;
+                } else if (emptySlots > 0) {
+                    const targetIndex = (row + emptySlots) * 6 + col;
+                    currentGridSymbols[targetIndex] = currentGridSymbols[index];
+                    currentGridSymbols[index] = null;
                 }
-            }
-
-            const newColumnCount = 5 - columnSymbols.length;
-            for (let i = 0; i < newColumnCount; i++) {
-                const newSymbolData = gameSymbols[Math.floor(Math.random() * 9)];
-                currentGridSymbols[i * 6 + col] = newSymbolData;
-                const newElement = createSymbolElement(newSymbolData);
-                newElement.style.transform = `translateY(-${newColumnCount * 100}%)`;
-                gameGrid.appendChild(newElement);
-                newSymbolElements.push({element: newElement, index: i * 6 + col});
-                await wait(50); // Yeni sembollerin görünmesi için küçük bir gecikme
-            }
-
-            for (let i = 0; i < columnSymbols.length; i++) {
-                const targetRow = 4 - i;
-                const targetIndex = targetRow * 6 + col;
-                currentGridSymbols[targetIndex] = columnSymbols[i];
             }
         }
         
-        await wait(50);
         gameGrid.innerHTML = '';
         currentGridSymbols.forEach(symbolData => {
-            if(symbolData) gameGrid.appendChild(createSymbolElement(symbolData));
+            if (symbolData) {
+                gameGrid.appendChild(createSymbolElement(symbolData));
+            } else {
+                const emptyDiv = document.createElement('div');
+                gameGrid.appendChild(emptyDiv);
+            }
         });
-        
-        await wait(300);
+
+        for (let col = 0; col < 6; col++) {
+            let newSymbolCount = 0;
+            for (let row = 4; row >= 0; row--) {
+                const index = row * 6 + col;
+                if(currentGridSymbols[index] === null) {
+                    newSymbolCount++;
+                    const newSymbolData = gameSymbols[Math.floor(Math.random() * 9)];
+                    currentGridSymbols[index] = newSymbolData;
+                    const newElement = createSymbolElement(newSymbolData);
+                    newElement.style.gridRowStart = row + 1;
+                    newElement.style.gridColumnStart = col + 1;
+                    newElement.style.transform = `translateY(-${newSymbolCount * 100}%)`;
+                    gameGrid.replaceChild(newElement, gameGrid.children[index]);
+                    
+                    await wait(50);
+                    newElement.style.transform = 'translateY(0)';
+                }
+            }
+        }
+        await wait(500);
     }
 
     async function handleSpinLogic(isBonusBuy = false) {
@@ -253,10 +287,6 @@ window.addEventListener('load', () => {
         if (playerData.balance < cost) {
             alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
             isSpinning = false;
-            spinButton.disabled = false;
-            buyBonusButton.disabled = false;
-            betIncreaseButton.disabled = false;
-            betDecreaseButton.disabled = false;
             return;
         }
 
@@ -298,8 +328,65 @@ window.addEventListener('load', () => {
         betAmountDisplay.textContent = betLevels[currentBetIndex];
     }
     
+    function populateInfoModal() {
+        // Sayfa 1: Sembol Ödemeleri
+        let page1HTML = `<div class="info-page active-page" data-page="1">
+                            <h2 data-key="info_p1_title">Symbol Payouts</h2>
+                            <div class="payout-table">`;
+        
+        const symbolsToDisplay = gameSymbols.filter(s => s.type === 'normal' || s.type === 'scatter');
+        symbolsToDisplay.forEach(symbol => {
+            page1HTML += `<div class="payout-item">
+                            <img src="${symbol.file}" alt="${symbol.name}">
+                            <ul>`;
+            const tiers = payTable[symbol.name];
+            if(symbol.name === 'scatter') {
+                page1HTML += `<li>6 &rarr; ${tiers[6]}x</li>
+                              <li>5 &rarr; ${tiers[5]}x</li>
+                              <li>4 &rarr; ${tiers[4]}x</li>
+                              <li data-key="info_scatter_pays">Pays on any position</li>`;
+            } else {
+                 page1HTML += `<li>12+ &rarr; ${tiers[12]}x</li>
+                               <li>10-11 &rarr; ${tiers[10]}x</li>
+                               <li>8-9 &rarr; ${tiers[8]}x</li>`;
+            }
+            page1HTML += `</ul></div>`;
+        });
+        page1HTML += `</div></div>`;
+
+        // Sayfa 2: Oyun Özellikleri
+        let page2HTML = `<div class="info-page" data-page="2">
+                            <h2 data-key="info_p2_title">Game Features</h2>
+                            <div class="feature-explanation">
+                                <h3 data-key="info_tumble_feature">Tumble Feature</h3>
+                                <p data-key="info_tumble_desc">After every spin, winning combinations are paid and winning symbols disappear. The remaining symbols fall to the bottom of the screen and the empty positions are replaced with new symbols coming from above.</p>
+                                <h3 data-key="info_freespins_feature">Bonus Round Feature</h3>
+                                <p data-key="info_freespins_desc">The Bonus Round feature is triggered when 4 or more SCATTER symbols hit anywhere on the screen. The round starts with 10 free spins.</p>
+                            </div>
+                         </div>`;
+        
+        // Sayfa 3: Çarpanlar
+        let page3HTML = `<div class="info-page" data-page="3">
+                            <h2 data-key="info_p3_title">Multiplier Symbols</h2>
+                            </div>`;
+
+        infoPagesContainer.innerHTML = page1HTML + page2HTML + page3HTML;
+    }
+
+    function showInfoPage(pageNumber) {
+        infoCurrentPage = pageNumber;
+        document.querySelectorAll('.info-page').forEach(page => {
+            page.classList.remove('active-page');
+        });
+        document.querySelector(`.info-page[data-page="${pageNumber}"]`).classList.add('active-page');
+        infoPageIndicator.textContent = `${pageNumber} / ${infoTotalPages}`;
+    }
+
+    // --- Başlangıç Kurulumu ve Olay Dinleyicileri ---
+    
     setLanguage(localStorage.getItem('language') || 'en');
     updateBetDisplay();
+    populateInfoModal();
 
     document.querySelectorAll('#language-selector button').forEach(button => {
         button.addEventListener('click', () => setLanguage(button.dataset.lang));
@@ -377,5 +464,26 @@ window.addEventListener('load', () => {
     confirmBuyButton.addEventListener('click', () => {
         buyBonusModal.classList.add('hidden');
         handleSpinLogic(true);
+    });
+
+    infoButton.addEventListener('click', () => {
+        infoModal.classList.remove('hidden');
+        infoModal.style.display = 'flex';
+    });
+
+    closeInfoModalButton.addEventListener('click', () => {
+        infoModal.classList.add('hidden');
+    });
+
+    infoNextButton.addEventListener('click', () => {
+        if(infoCurrentPage < infoTotalPages) {
+            showInfoPage(infoCurrentPage + 1);
+        }
+    });
+
+    infoPrevButton.addEventListener('click', () => {
+        if(infoCurrentPage > 1) {
+            showInfoPage(infoCurrentPage - 1);
+        }
     });
 });
