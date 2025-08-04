@@ -14,6 +14,8 @@ const languageStrings = {
         balance_text: "Bakiye",
         bet_text: "BAHİS",
         win_text: "KAZANÇ",
+        ante_bet_title: "Şans 2x",
+        ante_bet_desc: "Bonus kazanma şansını ikiye katla",
         buy_bonus_button: "★ BONUS SATIN AL",
         bonus_modal_title: "Satın Alımı Onayla",
         bonus_modal_text_1: "Bonus Özelliğini",
@@ -43,6 +45,8 @@ const languageStrings = {
         balance_text: "Balance",
         bet_text: "BET",
         win_text: "WIN",
+        ante_bet_title: "Double Chance",
+        ante_bet_desc: "to win feature",
         buy_bonus_button: "★ BUY BONUS",
         bonus_modal_title: "Confirm Purchase",
         bonus_modal_text_1: "Do you want to buy the Bonus Feature for",
@@ -86,13 +90,37 @@ const payTable = {
     'scatter':    { 4: 3,     5: 5,       6: 100 }
 };
 
+// YENİ: SANAL MAKARALAR (OLASILIK TABLOSU)
+function createReel(isAnte) {
+    const reel = [];
+    const weights = {
+        'banana': 20, 'watermelon': 18, 'cucumber': 16, 'apple': 14,
+        'peach': 12, 'cherry': 10, 'gem_green': 8, 'gem_purple': 6, 'heart_red': 4,
+        'scatter': isAnte ? 8 : 4 // Ante Bet aktifse Scatter şansı iki katına çıkar
+    };
+    for (const symbolName in weights) {
+        const symbolData = gameSymbols.find(s => s.name === symbolName);
+        for (let i = 0; i < weights[symbolName]; i++) {
+            reel.push(symbolData);
+        }
+    }
+    return reel;
+}
+
+let virtualReels = {
+    normal: createReel(false),
+    ante: createReel(true)
+};
+
 let currentLanguage = 'en';
 let playerData = {};
 let isSpinning = false;
+let isAnteBetActive = false;
 let currentGridSymbols = [];
 
 window.addEventListener('load', () => {
 
+    // --- Element Seçimleri (Tümü) ---
     const languageSelector = document.getElementById('language-selector');
     const loadingScreen = document.getElementById('loading-screen');
     const loginScreen = document.getElementById('login-screen');
@@ -121,6 +149,7 @@ window.addEventListener('load', () => {
     const infoPrevButton = document.getElementById('info-prev-button');
     const infoNextButton = document.getElementById('info-next-button');
     const infoPageIndicator = document.getElementById('info-page-indicator');
+    const anteBetCheckbox = document.getElementById('ante-bet-checkbox');
 
     const betLevels = [20, 50, 100, 200, 500, 1000];
     let currentBetIndex = 2;
@@ -161,12 +190,17 @@ window.addEventListener('load', () => {
         symbolDiv.appendChild(symbolImg);
         return symbolDiv;
     }
+
+    function getRandomSymbol() {
+        const reel = isAnteBetActive ? virtualReels.ante : virtualReels.normal;
+        return reel[Math.floor(Math.random() * reel.length)];
+    }
     
     function populateInitialGrid() {
         gameGrid.innerHTML = '';
         currentGridSymbols = [];
         for (let i = 0; i < 30; i++) {
-            const randomSymbolData = gameSymbols[Math.floor(Math.random() * 9)];
+            const randomSymbolData = getRandomSymbol();
             currentGridSymbols.push(randomSymbolData);
             const symbolElement = createSymbolElement(randomSymbolData);
             symbolElement.style.animation = `dropIn 0.5s ease-out forwards`;
@@ -196,7 +230,7 @@ window.addEventListener('load', () => {
                 else if (count >= 4 && payoutTiers[4]) winMultiplier = payoutTiers[4];
                 if (winMultiplier > 0) {
                     totalWin += betLevels[currentBetIndex] * winMultiplier;
-                    if(symbolName !== 'scatter') winningCombinations.push(symbolName);
+                    if (symbolName !== 'scatter') winningCombinations.push(symbolName);
                 }
             }
         }
@@ -246,26 +280,23 @@ window.addEventListener('load', () => {
             if (symbolData) {
                 gameGrid.appendChild(createSymbolElement(symbolData));
             } else {
-                const emptyDiv = document.createElement('div');
-                gameGrid.appendChild(emptyDiv);
+                gameGrid.appendChild(document.createElement('div'));
             }
         });
 
         for (let col = 0; col < 6; col++) {
             let newSymbolCount = 0;
-            for (let row = 4; row >= 0; row--) {
+            for (let row = 0; row < 5; row++) {
                 const index = row * 6 + col;
-                if(currentGridSymbols[index] === null) {
+                if (currentGridSymbols[index] === null) {
                     newSymbolCount++;
-                    const newSymbolData = gameSymbols[Math.floor(Math.random() * 9)];
+                    const newSymbolData = getRandomSymbol();
                     currentGridSymbols[index] = newSymbolData;
                     const newElement = createSymbolElement(newSymbolData);
-                    newElement.style.gridRowStart = row + 1;
-                    newElement.style.gridColumnStart = col + 1;
-                    newElement.style.transform = `translateY(-${newSymbolCount * 100}%)`;
+                    newElement.style.transform = `translateY(-${newSymbolCount * 105}%)`;
                     gameGrid.replaceChild(newElement, gameGrid.children[index]);
-                    
                     await wait(50);
+                    newElement.style.transition = 'transform 0.3s ease-out';
                     newElement.style.transform = 'translateY(0)';
                 }
             }
@@ -281,12 +312,12 @@ window.addEventListener('load', () => {
         betIncreaseButton.disabled = true;
         betDecreaseButton.disabled = true;
 
-        const currentBet = betLevels[currentBetIndex];
-        const cost = isBonusBuy ? currentBet * 100 : currentBet;
+        const baseBet = betLevels[currentBetIndex];
+        const cost = isAnteBetActive ? baseBet * 1.25 : baseBet;
 
         if (playerData.balance < cost) {
             alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
-            isSpinning = false;
+            isSpinning = false; // Enable buttons
             return;
         }
 
@@ -314,70 +345,51 @@ window.addEventListener('load', () => {
             playerData.balance += totalSpinWin;
             balanceDisplay.textContent = Math.round(playerData.balance);
         }
+
+        const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
+        if (scatterCount >= 4) {
+            await wait(500);
+            alert(currentLanguage === 'tr' ? 'TEBRİKLER! BONUS TURU BAŞLADI!' : 'CONGRATULATIONS! BONUS ROUND STARTED!');
+            // TODO: Bonus turu mantığı buraya gelecek
+        }
         
         localStorage.setItem(playerData.username, JSON.stringify(playerData));
         
         isSpinning = false;
         spinButton.disabled = false;
-        buyBonusButton.disabled = false;
+        buyBonusButton.disabled = isAnteBetActive;
         betIncreaseButton.disabled = false;
         betDecreaseButton.disabled = false;
     }
     
     function updateBetDisplay() {
-        betAmountDisplay.textContent = betLevels[currentBetIndex];
+        const baseBet = betLevels[currentBetIndex];
+        const displayBet = isAnteBetActive ? baseBet * 1.25 : baseBet;
+        betAmountDisplay.textContent = displayBet;
     }
     
     function populateInfoModal() {
-        // Sayfa 1: Sembol Ödemeleri
-        let page1HTML = `<div class="info-page active-page" data-page="1">
-                            <h2 data-key="info_p1_title">Symbol Payouts</h2>
-                            <div class="payout-table">`;
-        
+        let page1HTML = `<div class="info-page active-page" data-page="1"><h2 data-key="info_p1_title">Symbol Payouts</h2><div class="payout-table">`;
         const symbolsToDisplay = gameSymbols.filter(s => s.type === 'normal' || s.type === 'scatter');
         symbolsToDisplay.forEach(symbol => {
-            page1HTML += `<div class="payout-item">
-                            <img src="${symbol.file}" alt="${symbol.name}">
-                            <ul>`;
+            page1HTML += `<div class="payout-item"><img src="${symbol.file}" alt="${symbol.name}"><ul>`;
             const tiers = payTable[symbol.name];
-            if(symbol.name === 'scatter') {
-                page1HTML += `<li>6 &rarr; ${tiers[6]}x</li>
-                              <li>5 &rarr; ${tiers[5]}x</li>
-                              <li>4 &rarr; ${tiers[4]}x</li>
-                              <li data-key="info_scatter_pays">Pays on any position</li>`;
+            if (symbol.name === 'scatter') {
+                page1HTML += `<li>6 &rarr; ${tiers[6]}x</li><li>5 &rarr; ${tiers[5]}x</li><li>4 &rarr; ${tiers[4]}x</li><li data-key="info_scatter_pays">Pays on any position</li>`;
             } else {
-                 page1HTML += `<li>12+ &rarr; ${tiers[12]}x</li>
-                               <li>10-11 &rarr; ${tiers[10]}x</li>
-                               <li>8-9 &rarr; ${tiers[8]}x</li>`;
+                 page1HTML += `<li>12+ &rarr; ${tiers[12]}x</li><li>10-11 &rarr; ${tiers[10]}x</li><li>8-9 &rarr; ${tiers[8]}x</li>`;
             }
             page1HTML += `</ul></div>`;
         });
         page1HTML += `</div></div>`;
-
-        // Sayfa 2: Oyun Özellikleri
-        let page2HTML = `<div class="info-page" data-page="2">
-                            <h2 data-key="info_p2_title">Game Features</h2>
-                            <div class="feature-explanation">
-                                <h3 data-key="info_tumble_feature">Tumble Feature</h3>
-                                <p data-key="info_tumble_desc">After every spin, winning combinations are paid and winning symbols disappear. The remaining symbols fall to the bottom of the screen and the empty positions are replaced with new symbols coming from above.</p>
-                                <h3 data-key="info_freespins_feature">Bonus Round Feature</h3>
-                                <p data-key="info_freespins_desc">The Bonus Round feature is triggered when 4 or more SCATTER symbols hit anywhere on the screen. The round starts with 10 free spins.</p>
-                            </div>
-                         </div>`;
-        
-        // Sayfa 3: Çarpanlar
-        let page3HTML = `<div class="info-page" data-page="3">
-                            <h2 data-key="info_p3_title">Multiplier Symbols</h2>
-                            </div>`;
-
+        let page2HTML = `<div class="info-page" data-page="2"><h2 data-key="info_p2_title">Game Features</h2><div class="feature-explanation"><h3 data-key="info_tumble_feature">Tumble Feature</h3><p data-key="info_tumble_desc">After every spin, winning combinations are paid and winning symbols disappear. The remaining symbols fall to the bottom of the screen and the empty positions are replaced with new symbols coming from above.</p><h3 data-key="info_freespins_feature">Bonus Round Feature</h3><p data-key="info_freespins_desc">The Bonus Round feature is triggered when 4 or more SCATTER symbols hit anywhere on the screen. The round starts with 10 free spins.</p></div></div>`;
+        let page3HTML = `<div class="info-page" data-page="3"><h2 data-key="info_p3_title">Multiplier Symbols</h2></div>`;
         infoPagesContainer.innerHTML = page1HTML + page2HTML + page3HTML;
     }
 
     function showInfoPage(pageNumber) {
         infoCurrentPage = pageNumber;
-        document.querySelectorAll('.info-page').forEach(page => {
-            page.classList.remove('active-page');
-        });
+        document.querySelectorAll('.info-page').forEach(page => page.classList.remove('active-page'));
         document.querySelector(`.info-page[data-page="${pageNumber}"]`).classList.add('active-page');
         infoPageIndicator.textContent = `${pageNumber} / ${infoTotalPages}`;
     }
@@ -388,8 +400,10 @@ window.addEventListener('load', () => {
     updateBetDisplay();
     populateInfoModal();
 
-    document.querySelectorAll('#language-selector button').forEach(button => {
-        button.addEventListener('click', () => setLanguage(button.dataset.lang));
+    anteBetCheckbox.addEventListener('change', () => {
+        isAnteBetActive = anteBetCheckbox.checked;
+        buyBonusButton.disabled = isAnteBetActive;
+        updateBetDisplay();
     });
 
     loginButton.addEventListener('click', () => {
@@ -403,21 +417,14 @@ window.addEventListener('load', () => {
             alert(currentLanguage === 'tr' ? 'Lütfen geçerli bir e-posta adresi girin.' : 'Please enter a valid email address.');
             return;
         }
-
         loginScreen.classList.add('hidden');
         languageSelector.classList.add('hidden');
         loadingScreen.classList.remove('hidden');
         loadingScreen.style.display = 'flex';
-
         setTimeout(() => {
             let storedPlayerData = JSON.parse(localStorage.getItem(username));
             if (!storedPlayerData) {
-                storedPlayerData = {
-                    username: username,
-                    email: email,
-                    balance: 5000,
-                    lastLogin: new Date().toISOString()
-                };
+                storedPlayerData = { username, email, balance: 5000, lastLogin: new Date().toISOString() };
                 localStorage.setItem(username, JSON.stringify(storedPlayerData));
             }
             playerData = storedPlayerData;
@@ -447,7 +454,6 @@ window.addEventListener('load', () => {
     });
 
     spinButton.addEventListener('click', () => handleSpinLogic(false));
-
     buyBonusButton.addEventListener('click', () => {
         if (isSpinning) return;
         const currentBet = betLevels[currentBetIndex];
@@ -456,34 +462,20 @@ window.addEventListener('load', () => {
         buyBonusModal.classList.remove('hidden');
         buyBonusModal.style.display = 'flex';
     });
-
-    cancelBuyButton.addEventListener('click', () => {
-        buyBonusModal.classList.add('hidden');
-    });
-
+    cancelBuyButton.addEventListener('click', () => buyBonusModal.classList.add('hidden'));
     confirmBuyButton.addEventListener('click', () => {
         buyBonusModal.classList.add('hidden');
         handleSpinLogic(true);
     });
-
     infoButton.addEventListener('click', () => {
         infoModal.classList.remove('hidden');
         infoModal.style.display = 'flex';
     });
-
-    closeInfoModalButton.addEventListener('click', () => {
-        infoModal.classList.add('hidden');
-    });
-
+    closeInfoModalButton.addEventListener('click', () => infoModal.classList.add('hidden'));
     infoNextButton.addEventListener('click', () => {
-        if(infoCurrentPage < infoTotalPages) {
-            showInfoPage(infoCurrentPage + 1);
-        }
+        if (infoCurrentPage < infoTotalPages) showInfoPage(infoCurrentPage + 1);
     });
-
     infoPrevButton.addEventListener('click', () => {
-        if(infoCurrentPage > 1) {
-            showInfoPage(infoCurrentPage - 1);
-        }
+        if (infoCurrentPage > 1) showInfoPage(infoCurrentPage - 1);
     });
 });
