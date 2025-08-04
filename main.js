@@ -90,13 +90,12 @@ const payTable = {
     'scatter':    { 4: 3,     5: 5,       6: 100 }
 };
 
-// YENİ: SANAL MAKARALAR (OLASILIK TABLOSU)
 function createReel(isAnte) {
     const reel = [];
     const weights = {
         'banana': 20, 'watermelon': 18, 'cucumber': 16, 'apple': 14,
         'peach': 12, 'cherry': 10, 'gem_green': 8, 'gem_purple': 6, 'heart_red': 4,
-        'scatter': isAnte ? 8 : 4 // Ante Bet aktifse Scatter şansı iki katına çıkar
+        'scatter': isAnte ? 8 : 4
     };
     for (const symbolName in weights) {
         const symbolData = gameSymbols.find(s => s.name === symbolName);
@@ -107,7 +106,7 @@ function createReel(isAnte) {
     return reel;
 }
 
-let virtualReels = {
+const virtualReels = {
     normal: createReel(false),
     ante: createReel(true)
 };
@@ -120,7 +119,6 @@ let currentGridSymbols = [];
 
 window.addEventListener('load', () => {
 
-    // --- Element Seçimleri (Tümü) ---
     const languageSelector = document.getElementById('language-selector');
     const loadingScreen = document.getElementById('loading-screen');
     const loginScreen = document.getElementById('login-screen');
@@ -257,50 +255,35 @@ window.addEventListener('load', () => {
         });
         await Promise.all(promises);
 
-        winningIndices.forEach(index => {
-            currentGridSymbols[index] = null;
-        });
-
+        const newGridSymbols = [...currentGridSymbols];
+        winningIndices.forEach(index => newGridSymbols[index] = null);
+        
         for (let col = 0; col < 6; col++) {
             let emptySlots = 0;
             for (let row = 4; row >= 0; row--) {
                 const index = row * 6 + col;
-                if (currentGridSymbols[index] === null) {
+                if (newGridSymbols[index] === null) {
                     emptySlots++;
                 } else if (emptySlots > 0) {
                     const targetIndex = (row + emptySlots) * 6 + col;
-                    currentGridSymbols[targetIndex] = currentGridSymbols[index];
-                    currentGridSymbols[index] = null;
+                    newGridSymbols[targetIndex] = newGridSymbols[index];
+                    newGridSymbols[index] = null;
                 }
             }
-        }
-        
-        gameGrid.innerHTML = '';
-        currentGridSymbols.forEach(symbolData => {
-            if (symbolData) {
-                gameGrid.appendChild(createSymbolElement(symbolData));
-            } else {
-                gameGrid.appendChild(document.createElement('div'));
+            for (let i = 0; i < emptySlots; i++) {
+                newGridSymbols[i * 6 + col] = getRandomSymbol();
             }
-        });
+        }
 
-        for (let col = 0; col < 6; col++) {
-            let newSymbolCount = 0;
-            for (let row = 0; row < 5; row++) {
-                const index = row * 6 + col;
-                if (currentGridSymbols[index] === null) {
-                    newSymbolCount++;
-                    const newSymbolData = getRandomSymbol();
-                    currentGridSymbols[index] = newSymbolData;
-                    const newElement = createSymbolElement(newSymbolData);
-                    newElement.style.transform = `translateY(-${newSymbolCount * 105}%)`;
-                    gameGrid.replaceChild(newElement, gameGrid.children[index]);
-                    await wait(50);
-                    newElement.style.transition = 'transform 0.3s ease-out';
-                    newElement.style.transform = 'translateY(0)';
-                }
-            }
-        }
+        currentGridSymbols = newGridSymbols;
+        gameGrid.innerHTML = '';
+        currentGridSymbols.forEach((symbolData, i) => {
+            const symbolElement = createSymbolElement(symbolData);
+            symbolElement.style.animation = `dropIn 0.5s ease-out forwards`;
+            symbolElement.style.animationDelay = `${(i * 0.01)}s`;
+            gameGrid.appendChild(symbolElement);
+        });
+        
         await wait(500);
     }
 
@@ -313,11 +296,15 @@ window.addEventListener('load', () => {
         betDecreaseButton.disabled = true;
 
         const baseBet = betLevels[currentBetIndex];
-        const cost = isAnteBetActive ? baseBet * 1.25 : baseBet;
+        const cost = isBonusBuy ? baseBet * 100 : (isAnteBetActive ? baseBet * 1.25 : baseBet);
 
         if (playerData.balance < cost) {
             alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
             isSpinning = false; // Enable buttons
+            spinButton.disabled = false;
+            buyBonusButton.disabled = isAnteBetActive;
+            betIncreaseButton.disabled = false;
+            betDecreaseButton.disabled = false;
             return;
         }
 
@@ -394,8 +381,6 @@ window.addEventListener('load', () => {
         infoPageIndicator.textContent = `${pageNumber} / ${infoTotalPages}`;
     }
 
-    // --- Başlangıç Kurulumu ve Olay Dinleyicileri ---
-    
     setLanguage(localStorage.getItem('language') || 'en');
     updateBetDisplay();
     populateInfoModal();
@@ -454,6 +439,7 @@ window.addEventListener('load', () => {
     });
 
     spinButton.addEventListener('click', () => handleSpinLogic(false));
+    
     buyBonusButton.addEventListener('click', () => {
         if (isSpinning) return;
         const currentBet = betLevels[currentBetIndex];
@@ -462,19 +448,25 @@ window.addEventListener('load', () => {
         buyBonusModal.classList.remove('hidden');
         buyBonusModal.style.display = 'flex';
     });
+
     cancelBuyButton.addEventListener('click', () => buyBonusModal.classList.add('hidden'));
+    
     confirmBuyButton.addEventListener('click', () => {
         buyBonusModal.classList.add('hidden');
         handleSpinLogic(true);
     });
+    
     infoButton.addEventListener('click', () => {
         infoModal.classList.remove('hidden');
         infoModal.style.display = 'flex';
     });
+    
     closeInfoModalButton.addEventListener('click', () => infoModal.classList.add('hidden'));
+    
     infoNextButton.addEventListener('click', () => {
         if (infoCurrentPage < infoTotalPages) showInfoPage(infoCurrentPage + 1);
     });
+    
     infoPrevButton.addEventListener('click', () => {
         if (infoCurrentPage > 1) showInfoPage(infoCurrentPage - 1);
     });
