@@ -60,10 +60,36 @@ body {
     background-color: #0f0f18;
     z-index: 30;
 }
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
 .loading-content h1 {
     font-size: 48px;
     color: var(--primary-color);
+    margin: 0;
 }
+.progress-bar-container {
+    width: 250px;
+    height: 20px;
+    background-color: var(--dark-secondary);
+    border-radius: 10px;
+    border: 1px solid var(--primary-color);
+}
+#progress-bar {
+    width: 0%;
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    transition: width 0.1s linear;
+}
+#loading-percentage {
+    font-size: 16px;
+    color: var(--text-color);
+}
+
 
 /* Giriş Ekranı */
 #login-screen {
@@ -598,6 +624,15 @@ input:checked + .slider:before {
 .bonus-trigger-img {
     width: 100px;
     height: 100px;
+    animation: pulse 1.5s infinite;
+}
+
+#final-bonus-win-amount {
+    display: block;
+    font-size: 48px;
+    color: gold;
+    font-weight: bold;
+    margin: 10px 0 20px 0;
     animation: pulse 1.5s infinite;
 }
 
