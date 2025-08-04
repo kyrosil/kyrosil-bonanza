@@ -95,7 +95,7 @@ function createReel(isAnte) {
     const weights = {
         'banana': 20, 'watermelon': 18, 'cucumber': 16, 'apple': 14,
         'peach': 12, 'cherry': 10, 'gem_green': 8, 'gem_purple': 6, 'heart_red': 4,
-        'scatter': isAnte ? 7 : 4 // Dengeleme yapıldı
+        'scatter': isAnte ? 7 : 4
     };
     for (const symbolName in weights) {
         const symbolData = gameSymbols.find(s => s.name === symbolName);
@@ -218,7 +218,7 @@ window.addEventListener('load', () => {
         for (const symbolName in counts) {
             const count = counts[symbolName];
             if (payTable[symbolName]) {
-                if(ignoreScatters && symbolName === 'scatter') continue; // Döngüdeyken scatter'ı yok say
+                if(ignoreScatters && symbolName === 'scatter') continue;
 
                 const payoutTiers = payTable[symbolName];
                 let winMultiplier = 0;
@@ -317,7 +317,6 @@ window.addEventListener('load', () => {
         populateInitialGrid();
         await wait(500);
 
-        // HATA DÜZELTME: Scatter ödemesini döngüden ÖNCE bir kere yap.
         const initialScatterCheck = calculateWinnings(false);
         const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
         if (scatterCount >= 4) {
@@ -326,9 +325,8 @@ window.addEventListener('load', () => {
             spinWinAmount.textContent = Math.round(totalSpinWin);
         }
 
-        // Tumble döngüsü artık Scatter'ları görmezden gelecek.
         while (true) {
-            const { totalWin, winningIndices } = calculateWinnings(true); // true = ignore scatters
+            const { totalWin, winningIndices } = calculateWinnings(true);
 
             if (totalWin > 0) {
                 totalSpinWin += totalWin;
@@ -390,15 +388,11 @@ window.addEventListener('load', () => {
         document.querySelector(`.info-page[data-page="${pageNumber}"]`).classList.add('active-page');
         infoPageIndicator.textContent = `${pageNumber} / ${infoTotalPages}`;
     }
-
-    setLanguage(localStorage.getItem('language') || 'en');
-    updateBetDisplay();
-    populateInfoModal();
-
-    anteBetCheckbox.addEventListener('change', () => {
-        isAnteBetActive = anteBetCheckbox.checked;
-        buyBonusButton.disabled = isAnteBetActive;
-        updateBetDisplay();
+    
+    // --- OLAY DİNLEYİCİLERİ VE BAŞLANGIÇ AYARLARI ---
+    
+    document.querySelectorAll('#language-selector button').forEach(button => {
+        button.addEventListener('click', () => setLanguage(button.dataset.lang));
     });
 
     loginButton.addEventListener('click', () => {
@@ -480,4 +474,15 @@ window.addEventListener('load', () => {
     infoPrevButton.addEventListener('click', () => {
         if (infoCurrentPage > 1) showInfoPage(infoCurrentPage - 1);
     });
+
+    anteBetCheckbox.addEventListener('change', () => {
+        isAnteBetActive = anteBetCheckbox.checked;
+        buyBonusButton.disabled = isAnteBetActive;
+        updateBetDisplay();
+    });
+
+    // En sonda başlangıç ayarlarını yap
+    setLanguage(localStorage.getItem('language') || 'en');
+    updateBetDisplay();
+    populateInfoModal();
 });
