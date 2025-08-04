@@ -194,7 +194,7 @@ window.addEventListener('load', () => {
         winningIndices.forEach(index => {
             gridElements[index].classList.remove('winning');
             gridElements[index].classList.add('disappearing');
-            promises.push(wait(300));
+            promises.push(wait(500)); // Yavaşlatılan kaybolma animasyonu
         });
         await Promise.all(promises);
 
@@ -220,6 +220,7 @@ window.addEventListener('load', () => {
                 newElement.style.transform = `translateY(-${newColumnCount * 100}%)`;
                 gameGrid.appendChild(newElement);
                 newSymbolElements.push({element: newElement, index: i * 6 + col});
+                await wait(50); // Yeni sembollerin görünmesi için küçük bir gecikme
             }
 
             for (let i = 0; i < columnSymbols.length; i++) {
@@ -235,7 +236,7 @@ window.addEventListener('load', () => {
             if(symbolData) gameGrid.appendChild(createSymbolElement(symbolData));
         });
         
-        await wait(500);
+        await wait(300);
     }
 
     async function handleSpinLogic(isBonusBuy = false) {
@@ -296,8 +297,6 @@ window.addEventListener('load', () => {
     function updateBetDisplay() {
         betAmountDisplay.textContent = betLevels[currentBetIndex];
     }
-
-    // --- Başlangıç Kurulumu ve Olay Dinleyicileri ---
     
     setLanguage(localStorage.getItem('language') || 'en');
     updateBetDisplay();
