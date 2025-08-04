@@ -244,6 +244,11 @@ body {
     user-select: none;
 }
 
+/* YENİ: Şeftaliyi küçültmek için özel kural */
+.symbol img[alt="peach"] {
+    transform: scale(0.85);
+}
+
 @keyframes dropIn {
     from {
         transform: translateY(-50px);
@@ -334,7 +339,7 @@ body {
     opacity: 0.6;
 }
 
-/* YENİ: ANTE BET ANAHTARI */
+/* ANTE BET ANAHTARI */
 #ante-bet-control {
     display: flex;
     align-items: center;
@@ -410,7 +415,7 @@ input:checked + .slider:before {
         flex-wrap: wrap;
     }
     #ante-bet-control {
-        order: 3; /* En sona at */
+        order: 3;
         width: 100%;
         justify-content: center;
         margin-top: 10px;
