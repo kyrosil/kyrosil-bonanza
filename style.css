@@ -215,17 +215,15 @@ body {
 }
 
 .symbol {
-    /* background-color kaldırıldı, artık grid'in kendi arkaplanı var */
     border-radius: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 5px;
     box-sizing: border-box;
-    /* Animasyonlar artık JS ile yönetilecek */
-    opacity: 1; /* Başlangıçta görünür */
-    transform: translateY(0); /* Başlangıç pozisyonu */
-    transition: transform 0.3s ease-in-out; /* YENİ: Kayma animasyonu */
+    opacity: 1;
+    transform: translateY(0);
+    transition: transform 0.3s ease-in-out;
 }
 
 .symbol.winning {
@@ -276,12 +274,25 @@ body {
     gap: 20px;
 }
 
+#info-button {
+    background-color: var(--dark-secondary);
+    color: var(--primary-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-color);
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
 #spin-win-display {
     background-color: rgba(0,0,0,0.5);
     padding: 10px 20px;
     border-radius: 10px;
     text-align: center;
-    min-width: 100px; /* Genişliğin sürekli değişmesini engeller */
+    min-width: 100px;
 }
 #spin-win-display span {
     display: block;
@@ -291,7 +302,6 @@ body {
     color: gold;
     font-weight: bold;
 }
-
 
 #spin-button {
     background-color: #5cb85c;
@@ -348,7 +358,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.85);
     z-index: 1000;
     display: flex;
     justify-content: center;
@@ -363,6 +373,18 @@ body {
     border: 2px solid var(--primary-color);
     max-width: 400px;
     width: 90%;
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
 }
 
 .modal-content h2 {
@@ -402,4 +424,57 @@ body {
 
 .modal-button.cancel {
     background-color: #6c757d;
+}
+
+/* BİLGİ EKRANI ÖZEL STİLLERİ */
+.info-modal-content {
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.info-page {
+    display: none;
+}
+.info-page.active-page {
+    display: block;
+}
+
+.payout-table {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.payout-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.payout-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.payout-item ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+}
+
+.info-nav {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+#info-page-indicator {
+    font-weight: bold;
 }
