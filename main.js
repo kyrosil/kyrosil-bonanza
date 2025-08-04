@@ -73,7 +73,7 @@ const payTable = {
 let currentLanguage = 'en';
 let playerData = {};
 let isSpinning = false;
-let currentGridSymbols = []; // Izgaradaki sembol verilerini tutan global dizi
+let currentGridSymbols = [];
 
 window.addEventListener('load', () => {
 
@@ -104,6 +104,29 @@ window.addEventListener('load', () => {
     
     const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+    function setLanguage(lang) {
+        currentLanguage = lang;
+        localStorage.setItem('language', lang);
+        document.querySelectorAll('#language-selector button').forEach(button => {
+            button.classList.remove('active');
+            if (button.dataset.lang === lang) {
+                button.classList.add('active');
+            }
+        });
+        document.querySelectorAll('[data-key]').forEach(element => {
+            const key = element.dataset.key;
+            if (languageStrings[lang] && languageStrings[lang][key]) {
+                element.textContent = languageStrings[lang][key];
+            }
+        });
+        document.querySelectorAll('[data-key-placeholder]').forEach(element => {
+            const key = element.dataset.keyPlaceholder;
+            if (languageStrings[lang] && languageStrings[lang][key]) {
+                element.placeholder = languageStrings[lang][key];
+            }
+        });
+    }
+
     function createSymbolElement(symbolData) {
         const symbolDiv = document.createElement('div');
         symbolDiv.classList.add('symbol');
@@ -130,7 +153,7 @@ window.addEventListener('load', () => {
     function calculateWinnings() {
         const counts = {};
         const winningIndices = new Set();
-        currentGridSymbols.forEach((symbol, index) => {
+        currentGridSymbols.forEach((symbol) => {
             if (symbol) counts[symbol.name] = (counts[symbol.name] || 0) + 1;
         });
         let totalWin = 0;
@@ -152,7 +175,7 @@ window.addEventListener('load', () => {
                 }
             }
         }
-        if (totalWin > 0) {
+        if (winningCombinations.length > 0) {
             currentGridSymbols.forEach((symbol, index) => {
                 if (symbol && winningCombinations.includes(symbol.name)) {
                     winningIndices.add(index);
@@ -166,45 +189,53 @@ window.addEventListener('load', () => {
         const gridElements = Array.from(gameGrid.children);
         winningIndices.forEach(index => gridElements[index].classList.add('winning'));
         await wait(500);
+        
+        const promises = [];
         winningIndices.forEach(index => {
             gridElements[index].classList.remove('winning');
             gridElements[index].classList.add('disappearing');
+            promises.push(wait(300));
         });
-        await wait(300);
+        await Promise.all(promises);
 
-        const newGridSymbols = [...currentGridSymbols];
-        winningIndices.forEach(index => newGridSymbols[index] = null);
+        winningIndices.forEach(index => {
+            currentGridSymbols[index] = null;
+        });
 
+        const newSymbolElements = [];
         for (let col = 0; col < 6; col++) {
-            let emptySlots = 0;
+            const columnSymbols = [];
             for (let row = 4; row >= 0; row--) {
                 const index = row * 6 + col;
-                if (newGridSymbols[index] === null) {
-                    emptySlots++;
-                } else if (emptySlots > 0) {
-                    const targetIndex = (row + emptySlots) * 6 + col;
-                    newGridSymbols[targetIndex] = newGridSymbols[index];
-                    newGridSymbols[index] = null;
-                    const elementToMove = gridElements[index];
-                    elementToMove.style.transform = `translateY(${emptySlots * 100}%)`;
+                if (currentGridSymbols[index]) {
+                    columnSymbols.push(currentGridSymbols[index]);
                 }
             }
-            for (let i = 0; i < emptySlots; i++) {
+
+            const newColumnCount = 5 - columnSymbols.length;
+            for (let i = 0; i < newColumnCount; i++) {
                 const newSymbolData = gameSymbols[Math.floor(Math.random() * 9)];
-                const targetIndex = i * 6 + col;
-                newGridSymbols[targetIndex] = newSymbolData;
+                currentGridSymbols[i * 6 + col] = newSymbolData;
                 const newElement = createSymbolElement(newSymbolData);
-                newElement.style.transform = `translateY(-${emptySlots * 100}%)`;
+                newElement.style.transform = `translateY(-${newColumnCount * 100}%)`;
                 gameGrid.appendChild(newElement);
-                setTimeout(() => { newElement.style.transform = 'translateY(0)'; }, 50);
+                newSymbolElements.push({element: newElement, index: i * 6 + col});
+            }
+
+            for (let i = 0; i < columnSymbols.length; i++) {
+                const targetRow = 4 - i;
+                const targetIndex = targetRow * 6 + col;
+                currentGridSymbols[targetIndex] = columnSymbols[i];
             }
         }
         
-        await wait(400);
-        currentGridSymbols = newGridSymbols;
+        await wait(50);
         gameGrid.innerHTML = '';
-        currentGridSymbols.forEach(symbolData => gameGrid.appendChild(createSymbolElement(symbolData)));
-        return;
+        currentGridSymbols.forEach(symbolData => {
+            if(symbolData) gameGrid.appendChild(createSymbolElement(symbolData));
+        });
+        
+        await wait(500);
     }
 
     async function handleSpinLogic(isBonusBuy = false) {
@@ -217,11 +248,17 @@ window.addEventListener('load', () => {
 
         const currentBet = betLevels[currentBetIndex];
         const cost = isBonusBuy ? currentBet * 100 : currentBet;
+
         if (playerData.balance < cost) {
             alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
             isSpinning = false;
+            spinButton.disabled = false;
+            buyBonusButton.disabled = false;
+            betIncreaseButton.disabled = false;
+            betDecreaseButton.disabled = false;
             return;
         }
+
         playerData.balance -= cost;
         balanceDisplay.textContent = Math.round(playerData.balance);
         spinWinAmount.textContent = 0;
@@ -232,6 +269,7 @@ window.addEventListener('load', () => {
 
         while (true) {
             const { totalWin, winningIndices } = calculateWinnings();
+
             if (totalWin > 0) {
                 totalSpinWin += totalWin;
                 spinWinAmount.textContent = Math.round(totalSpinWin);
@@ -247,74 +285,65 @@ window.addEventListener('load', () => {
         }
         
         localStorage.setItem(playerData.username, JSON.stringify(playerData));
+        
         isSpinning = false;
         spinButton.disabled = false;
         buyBonusButton.disabled = false;
         betIncreaseButton.disabled = false;
         betDecreaseButton.disabled = false;
     }
-
-    // --- Başlangıç Kurulumu ---
-    // ... (dil, login, bet butonları ve modal butonları için tüm olay dinleyicileri burada)
     
-    // Login button logic - now populates grid on start
+    function updateBetDisplay() {
+        betAmountDisplay.textContent = betLevels[currentBetIndex];
+    }
+
+    // --- Başlangıç Kurulumu ve Olay Dinleyicileri ---
+    
+    setLanguage(localStorage.getItem('language') || 'en');
+    updateBetDisplay();
+
+    document.querySelectorAll('#language-selector button').forEach(button => {
+        button.addEventListener('click', () => setLanguage(button.dataset.lang));
+    });
+
     loginButton.addEventListener('click', () => {
-        // ... (validation logic is the same)
+        const username = usernameInput.value.trim();
+        const email = emailInput.value.trim();
+        if (username === "" || email === "") {
+            alert(currentLanguage === 'tr' ? 'Lütfen tüm alanları doldurun.' : 'Please fill in all fields.');
+            return;
+        }
+        if (!email.includes('@') || !email.includes('.')) {
+            alert(currentLanguage === 'tr' ? 'Lütfen geçerli bir e-posta adresi girin.' : 'Please enter a valid email address.');
+            return;
+        }
+
         loginScreen.classList.add('hidden');
         languageSelector.classList.add('hidden');
         loadingScreen.classList.remove('hidden');
         loadingScreen.style.display = 'flex';
+
         setTimeout(() => {
-            // ... (player data logic is the same)
+            let storedPlayerData = JSON.parse(localStorage.getItem(username));
+            if (!storedPlayerData) {
+                storedPlayerData = {
+                    username: username,
+                    email: email,
+                    balance: 5000,
+                    lastLogin: new Date().toISOString()
+                };
+                localStorage.setItem(username, JSON.stringify(storedPlayerData));
+            }
             playerData = storedPlayerData;
             playerUsernameDisplay.textContent = playerData.username;
             balanceDisplay.textContent = playerData.balance;
-            populateInitialGrid(); // Grid'i dolu başlat
+            populateInitialGrid(); 
             loadingScreen.classList.add('hidden');
             gameScreen.classList.remove('hidden');
             gameScreen.style.display = 'flex';
         }, 2000);
     });
-    
-    // Diğer tüm olay dinleyicileri (setLanguage, bet, spin, bonus modal) öncekiyle aynı mantıkta çalışır,
-    // Sadece spin ve confirm buy butonları artık handleSpinLogic'i çağırır.
-    
-    spinButton.addEventListener('click', () => handleSpinLogic(false));
-    confirmBuyButton.addEventListener('click', () => {
-        buyBonusModal.classList.add('hidden');
-        handleSpinLogic(true);
-    });
 
-    // Geri kalan tüm dinleyiciler...
-    // Bu kısım önceki kodla aynı, buraya tekrar ekliyorum
-    function setLanguage(lang) {
-        currentLanguage = lang;
-        localStorage.setItem('language', lang);
-        document.querySelectorAll('#language-selector button').forEach(button => {
-            button.classList.remove('active');
-            if (button.dataset.lang === lang) {
-                button.classList.add('active');
-            }
-        });
-        document.querySelectorAll('[data-key]').forEach(element => {
-            const key = element.dataset.key;
-            if (languageStrings[lang] && languageStrings[lang][key]) {
-                element.textContent = languageStrings[lang][key];
-            }
-        });
-        document.querySelectorAll('[data-key-placeholder]').forEach(element => {
-            const key = element.dataset.keyPlaceholder;
-            if (languageStrings[lang] && languageStrings[lang][key]) {
-                element.placeholder = languageStrings[lang][key];
-            }
-        });
-    }
-    updateBetDisplay();
-    document.querySelectorAll('#language-selector button').forEach(button => {
-        button.addEventListener('click', () => setLanguage(button.dataset.lang));
-    });
-    const savedLang = localStorage.getItem('language') || 'en';
-    setLanguage(savedLang);
     betIncreaseButton.addEventListener('click', () => {
         if (isSpinning) return;
         if (currentBetIndex < betLevels.length - 1) {
@@ -322,6 +351,7 @@ window.addEventListener('load', () => {
             updateBetDisplay();
         }
     });
+
     betDecreaseButton.addEventListener('click', () => {
         if (isSpinning) return;
         if (currentBetIndex > 0) {
@@ -329,6 +359,9 @@ window.addEventListener('load', () => {
             updateBetDisplay();
         }
     });
+
+    spinButton.addEventListener('click', () => handleSpinLogic(false));
+
     buyBonusButton.addEventListener('click', () => {
         if (isSpinning) return;
         const currentBet = betLevels[currentBetIndex];
@@ -337,7 +370,13 @@ window.addEventListener('load', () => {
         buyBonusModal.classList.remove('hidden');
         buyBonusModal.style.display = 'flex';
     });
+
     cancelBuyButton.addEventListener('click', () => {
         buyBonusModal.classList.add('hidden');
+    });
+
+    confirmBuyButton.addEventListener('click', () => {
+        buyBonusModal.classList.add('hidden');
+        handleSpinLogic(true);
     });
 });
