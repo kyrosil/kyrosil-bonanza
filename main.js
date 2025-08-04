@@ -13,6 +13,7 @@ const languageStrings = {
         welcome_text: "Hoş Geldin",
         balance_text: "Bakiye",
         bet_text: "BAHİS",
+        win_text: "KAZANÇ",
         buy_bonus_button: "★ BONUS SATIN AL",
         bonus_modal_title: "Satın Alımı Onayla",
         bonus_modal_text_1: "Bonus Özelliğini",
@@ -33,6 +34,7 @@ const languageStrings = {
         welcome_text: "Welcome",
         balance_text: "Balance",
         bet_text: "BET",
+        win_text: "WIN",
         buy_bonus_button: "★ BUY BONUS",
         bonus_modal_title: "Confirm Purchase",
         bonus_modal_text_1: "Do you want to buy the Bonus Feature for",
@@ -55,9 +57,7 @@ const gameSymbols = [
     { name: 'multiplier', file: 'multiplier_bomb.png', type: 'multiplier' }
 ];
 
-// YENİ: ÖDEME TABLOSU (Bahis Miktarı Çarpanı Olarak)
 const payTable = {
-    // 8-9 Adet | 10-11 Adet | 12+ Adet
     'banana':     { 8: 0.25,  10: 0.75,    12: 2 },
     'watermelon': { 8: 0.40,  10: 0.90,    12: 4 },
     'cucumber':   { 8: 0.50,  10: 1,       12: 5 },
@@ -67,12 +67,12 @@ const payTable = {
     'gem_green':  { 8: 2,     10: 5,       12: 15 },
     'gem_purple': { 8: 2.5,   10: 10,      12: 25 },
     'heart_red':  { 8: 10,    10: 25,      12: 50 },
-    // 4 Adet | 5 Adet | 6 Adet
     'scatter':    { 4: 3,     5: 5,       6: 100 }
 };
 
 let currentLanguage = 'en';
 let playerData = {};
+let isSpinning = false; // Oyunun meşgul olup olmadığını kontrol etmek için
 
 window.addEventListener('load', () => {
 
@@ -95,10 +95,13 @@ window.addEventListener('load', () => {
     const bonusCostDisplay = document.getElementById('bonus-cost-display');
     const confirmBuyButton = document.getElementById('confirm-buy-button');
     const cancelBuyButton = document.getElementById('cancel-buy-button');
+    const spinWinDisplay = document.getElementById('spin-win-display');
+    const spinWinAmount = document.getElementById('spin-win-amount');
 
     const betLevels = [20, 50, 100, 200, 500, 1000];
     let currentBetIndex = 2;
 
+    // --- Dil ve Arayüz Fonksiyonları ---
     function setLanguage(lang) {
         currentLanguage = lang;
         localStorage.setItem('language', lang);
@@ -122,79 +125,197 @@ window.addEventListener('load', () => {
         });
     }
 
-    function populateGrid() {
-        gameGrid.innerHTML = '';
-        const currentSymbols = []; // Ekrana gelen sembolleri tutacak dizi
-        for (let i = 0; i < 30; i++) {
-            const randomSymbolData = gameSymbols[Math.floor(Math.random() * 9)];
-            currentSymbols.push(randomSymbolData); // Sembolü listeye ekle
-
-            const symbolDiv = document.createElement('div');
-            symbolDiv.classList.add('symbol');
-            const symbolImg = document.createElement('img');
-            symbolImg.src = randomSymbolData.file; 
-            symbolImg.alt = randomSymbolData.name;
+    function updateBetDisplay() {
+        betAmountDisplay.textContent = betLevels[currentBetIndex];
+    }
     
-            symbolDiv.style.animationDelay = `${(i * 0.02)}s`;
-            symbolDiv.appendChild(symbolImg);
-            gameGrid.appendChild(symbolDiv);
-        }
-        return currentSymbols; // Ekrondaki sembollerin listesini döndür
+    // Promise tabanlı bekleme fonksiyonu
+    const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    // --- Oyun Mantığı Fonksiyonları ---
+
+    function createSymbol(symbolData) {
+        const symbolDiv = document.createElement('div');
+        symbolDiv.classList.add('symbol');
+        symbolDiv.dataset.symbolName = symbolData.name; // Veriyi saklamak için
+
+        const symbolImg = document.createElement('img');
+        symbolImg.src = symbolData.file;
+        symbolImg.alt = symbolData.name;
+
+        symbolDiv.appendChild(symbolImg);
+        return symbolDiv;
     }
 
-    // YENİ: KAZANÇ HESAPLAMA FONKSİYONU
-    function calculateWinnings(symbolsOnGrid, currentBet) {
+    function calculateWinnings(gridSymbols) {
         const counts = {};
-        // 1. Ekrondaki her sembolü say
-        for (const symbol of symbolsOnGrid) {
-            counts[symbol.name] = (counts[symbol.name] || 0) + 1;
-        }
+        const winningIndices = new Set();
+        
+        gridSymbols.forEach((symbol, index) => {
+            if (symbol) {
+                counts[symbol.name] = (counts[symbol.name] || 0) + 1;
+            }
+        });
 
         let totalWin = 0;
+        const winningCombinations = [];
 
-        // 2. Sayım sonuçlarını ödeme tablosuyla karşılaştır
         for (const symbolName in counts) {
             const count = counts[symbolName];
             if (payTable[symbolName]) {
                 const payoutTiers = payTable[symbolName];
                 let winMultiplier = 0;
                 
-                // Gelen sayının hangi ödeme dilimine girdiğini bul
-                if (count >= 12 && payoutTiers[12]) {
-                    winMultiplier = payoutTiers[12];
-                } else if (count >= 10 && payoutTiers[10]) {
-                    winMultiplier = payoutTiers[10];
-                } else if (count >= 8 && payoutTiers[8]) {
-                    winMultiplier = payoutTiers[8];
-                } else if (count >= 6 && payoutTiers[6]) { // Scatter için
-                    winMultiplier = payoutTiers[6];
-                } else if (count >= 5 && payoutTiers[5]) { // Scatter için
-                    winMultiplier = payoutTiers[5];
-                } else if (count >= 4 && payoutTiers[4]) { // Scatter için
-                    winMultiplier = payoutTiers[4];
-                }
+                if (count >= 12 && payoutTiers[12]) winMultiplier = payoutTiers[12];
+                else if (count >= 10 && payoutTiers[10]) winMultiplier = payoutTiers[10];
+                else if (count >= 8 && payoutTiers[8]) winMultiplier = payoutTiers[8];
+                else if (count >= 6 && payoutTiers[6]) winMultiplier = payoutTiers[6];
+                else if (count >= 5 && payoutTiers[5]) winMultiplier = payoutTiers[5];
+                else if (count >= 4 && payoutTiers[4]) winMultiplier = payoutTiers[4];
 
                 if (winMultiplier > 0) {
-                    totalWin += currentBet * winMultiplier;
+                    totalWin += betLevels[currentBetIndex] * winMultiplier;
+                    winningCombinations.push(symbolName);
                 }
             }
         }
-        return totalWin;
+
+        if (totalWin > 0) {
+            gridSymbols.forEach((symbol, index) => {
+                if (symbol && winningCombinations.includes(symbol.name)) {
+                    winningIndices.add(index);
+                }
+            });
+        }
+        
+        return { totalWin, winningIndices };
     }
 
-    function updateBetDisplay() {
-        betAmountDisplay.textContent = betLevels[currentBetIndex];
+    async function handleTumbles(gridSymbols, winningIndices) {
+        const gridElements = Array.from(gameGrid.children);
+
+        // 1. Kazananları Vurgula
+        winningIndices.forEach(index => {
+            gridElements[index].classList.add('winning');
+        });
+        await wait(500); // Vurguyu göstermek için bekle
+
+        // 2. Patlat
+        winningIndices.forEach(index => {
+            gridElements[index].classList.add('disappearing');
+        });
+        await wait(300); // Patlama animasyonu için bekle
+
+        // 3. Grid'i güncelle
+        const newGridSymbols = [...gridSymbols];
+        winningIndices.forEach(index => {
+            newGridSymbols[index] = null; // Patlayanları boşalt
+        });
+
+        // 4. Sembolleri Düşür
+        for (let col = 0; col < 6; col++) {
+            let emptyRow = 4;
+            for (let row = 4; row >= 0; row--) {
+                const index = row * 6 + col;
+                if (newGridSymbols[index] !== null) {
+                    const targetIndex = emptyRow * 6 + col;
+                    if (index !== targetIndex) {
+                        newGridSymbols[targetIndex] = newGridSymbols[index];
+                        newGridSymbols[index] = null;
+                    }
+                    emptyRow--;
+                }
+            }
+        }
+
+        // 5. Yeni semboller ekle
+        for (let i = 0; i < newGridSymbols.length; i++) {
+            if (newGridSymbols[i] === null) {
+                newGridSymbols[i] = gameSymbols[Math.floor(Math.random() * 9)];
+            }
+        }
+
+        // 6. DOM'u yeniden çiz
+        gameGrid.innerHTML = '';
+        newGridSymbols.forEach((symbolData, i) => {
+            const symbolElement = createSymbol(symbolData);
+            symbolElement.style.animationDelay = `${(i * 0.01)}s`;
+            gameGrid.appendChild(symbolElement);
+        });
+        
+        await wait(500); // Yeni sembollerin oturması için bekle
+        return newGridSymbols;
     }
+
+    async function handleSpinLogic(isBonusBuy = false) {
+        if (isSpinning) return;
+        isSpinning = true;
+        spinButton.disabled = true;
+        buyBonusButton.disabled = true;
+
+        const currentBet = betLevels[currentBetIndex];
+        const cost = isBonusBuy ? currentBet * 100 : currentBet;
+
+        if (playerData.balance < cost) {
+            alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
+            isSpinning = false;
+            spinButton.disabled = false;
+            buyBonusButton.disabled = false;
+            return;
+        }
+
+        playerData.balance -= cost;
+        balanceDisplay.textContent = playerData.balance;
+        spinWinDisplay.classList.remove('hidden');
+        spinWinAmount.textContent = 0;
+        let totalSpinWin = 0;
+
+        // İlk çevirme
+        let currentGridSymbols = [];
+        gameGrid.innerHTML = '';
+        for (let i = 0; i < 30; i++) {
+            const randomSymbolData = gameSymbols[Math.floor(Math.random() * 9)];
+            currentGridSymbols.push(randomSymbolData);
+            const symbolElement = createSymbol(randomSymbolData);
+            symbolElement.style.animationDelay = `${(i * 0.02)}s`;
+            gameGrid.appendChild(symbolElement);
+        }
+        await wait(500);
+
+        // Tumble Döngüsü
+        while (true) {
+            const { totalWin, winningIndices } = calculateWinnings(currentGridSymbols);
+
+            if (totalWin > 0) {
+                totalSpinWin += totalWin;
+                spinWinAmount.textContent = Math.round(totalSpinWin);
+                currentGridSymbols = await handleTumbles(currentGridSymbols, winningIndices);
+            } else {
+                break; // Kazanç yoksa döngüden çık
+            }
+        }
+        
+        if (totalSpinWin > 0) {
+            playerData.balance += totalSpinWin;
+            balanceDisplay.textContent = Math.round(playerData.balance);
+        }
+        
+        localStorage.setItem(playerData.username, JSON.stringify(playerData));
+        await wait(500);
+        spinWinDisplay.classList.add('hidden');
+        isSpinning = false;
+        spinButton.disabled = false;
+        buyBonusButton.disabled = false;
+    }
+
+    // --- Başlangıç Kurulumu ve Olay Dinleyicileri ---
     
     updateBetDisplay();
+    setLanguage(localStorage.getItem('language') || 'en');
 
     document.querySelectorAll('#language-selector button').forEach(button => {
-        button.addEventListener('click', () => {
-            setLanguage(button.dataset.lang);
-        });
+        button.addEventListener('click', () => setLanguage(button.dataset.lang));
     });
-    const savedLang = localStorage.getItem('language') || 'en';
-    setLanguage(savedLang);
 
     loginButton.addEventListener('click', () => {
         const username = usernameInput.value.trim();
@@ -227,7 +348,7 @@ window.addEventListener('load', () => {
             playerData = storedPlayerData;
             playerUsernameDisplay.textContent = playerData.username;
             balanceDisplay.textContent = playerData.balance;
-            populateGrid();
+            gameGrid.innerHTML = ''; // Başlangıçta boş olsun
             loadingScreen.classList.add('hidden');
             gameScreen.classList.remove('hidden');
             gameScreen.style.display = 'flex';
@@ -235,6 +356,7 @@ window.addEventListener('load', () => {
     });
 
     betIncreaseButton.addEventListener('click', () => {
+        if (isSpinning) return;
         if (currentBetIndex < betLevels.length - 1) {
             currentBetIndex++;
             updateBetDisplay();
@@ -242,36 +364,17 @@ window.addEventListener('load', () => {
     });
 
     betDecreaseButton.addEventListener('click', () => {
+        if (isSpinning) return;
         if (currentBetIndex > 0) {
             currentBetIndex--;
             updateBetDisplay();
         }
     });
 
-    spinButton.addEventListener('click', () => {
-        const currentBet = betLevels[currentBetIndex];
-        if (playerData.balance < currentBet) {
-            alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
-            return;
-        }
-        playerData.balance -= currentBet;
-        balanceDisplay.textContent = playerData.balance;
-        
-        const symbolsOnGrid = populateGrid();
-        const winnings = calculateWinnings(symbolsOnGrid, currentBet);
-
-        if (winnings > 0) {
-            playerData.balance += winnings;
-            balanceDisplay.textContent = Math.round(playerData.balance); // Küsuratları yuvarla
-            setTimeout(() => { // Uyarıyı küçük bir gecikmeyle göster, daha doğal durur
-                alert(currentLanguage === 'tr' ? `Tebrikler, ${Math.round(winnings)} Kyroslira kazandınız!` : `Congratulations, you won ${Math.round(winnings)} Kyroslira!`);
-            }, 500); // 0.5 saniye sonra
-        }
-        
-        localStorage.setItem(playerData.username, JSON.stringify(playerData));
-    });
+    spinButton.addEventListener('click', () => handleSpinLogic(false));
 
     buyBonusButton.addEventListener('click', () => {
+        if (isSpinning) return;
         const currentBet = betLevels[currentBetIndex];
         const bonusCost = currentBet * 100;
         bonusCostDisplay.textContent = bonusCost;
@@ -284,30 +387,7 @@ window.addEventListener('load', () => {
     });
 
     confirmBuyButton.addEventListener('click', () => {
-        const currentBet = betLevels[currentBetIndex];
-        const bonusCost = currentBet * 100;
-        if (playerData.balance < bonusCost) {
-            alert(currentLanguage === 'tr' ? `Yetersiz bakiye! Bonus için ${bonusCost} Kyroslira gerekli.` : `Insufficient balance! Bonus requires ${bonusCost} Kyroslira.`);
-            return;
-        }
-        playerData.balance -= bonusCost;
-        balanceDisplay.textContent = playerData.balance;
-        localStorage.setItem(playerData.username, JSON.stringify(playerData));
         buyBonusModal.classList.add('hidden');
-        alert(currentLanguage === 'tr' ? 'Bonus Turu Başlıyor!' : 'Bonus Round Starting!');
-        
-        const symbolsOnGrid = populateGrid();
-        const winnings = calculateWinnings(symbolsOnGrid, currentBet);
-
-        if (winnings > 0) {
-            playerData.balance += winnings;
-            balanceDisplay.textContent = Math.round(playerData.balance);
-            setTimeout(() => {
-                alert(currentLanguage === 'tr' ? `Tebrikler, ${Math.round(winnings)} Kyroslira kazandınız!` : `Congratulations, you won ${Math.round(winnings)} Kyroslira!`);
-            }, 500);
-        }
-        
-        localStorage.setItem(playerData.username, JSON.stringify(playerData));
+        handleSpinLogic(true);
     });
-
 });
