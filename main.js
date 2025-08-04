@@ -108,7 +108,7 @@ function createReel(isAnte) {
     const weights = {
         'banana': 20, 'watermelon': 18, 'cucumber': 16, 'apple': 14,
         'peach': 12, 'cherry': 10, 'gem_green': 8, 'gem_purple': 6, 'heart_red': 4,
-        'scatter': isAnte ? 7 : 4
+        'scatter': isAnte ? 6 : 3 // Dengeleme yapıldı
     };
     for (const symbolName in weights) {
         const symbolData = gameSymbols.find(s => s.name === symbolName);
@@ -129,7 +129,6 @@ let playerData = {};
 let isSpinning = false;
 let isAnteBetActive = false;
 let currentGridSymbols = [];
-
 let gameState = 'normal';
 let freeSpinsRemaining = 0;
 let totalBonusWin = 0;
@@ -250,7 +249,7 @@ window.addEventListener('load', () => {
         for (const symbolName in counts) {
             const count = counts[symbolName];
             if (payTable[symbolName]) {
-                if(ignoreScatters && symbolName === 'scatter') continue;
+                if (ignoreScatters && symbolName === 'scatter') continue;
                 const payoutTiers = payTable[symbolName];
                 let winMultiplier = 0;
                 if (count >= 12 && payoutTiers[12]) winMultiplier = payoutTiers[12];
@@ -319,43 +318,17 @@ window.addEventListener('load', () => {
         await wait(500);
     }
 
-    async function handleSpinLogic(isBonusBuy = false) {
-        if (isSpinning) return;
-        isSpinning = true;
-        spinButton.disabled = true;
-        buyBonusButton.disabled = true;
-        betIncreaseButton.disabled = true;
-        betDecreaseButton.disabled = true;
-
-        if (gameState === 'normal') {
-            const baseBet = betLevels[currentBetIndex];
-            const cost = isBonusBuy ? baseBet * 100 : (isAnteBetActive ? baseBet * 1.25 : baseBet);
-            if (playerData.balance < cost) {
-                alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
-                isSpinning = false;
-                spinButton.disabled = false;
-                buyBonusButton.disabled = isAnteBetActive;
-                betIncreaseButton.disabled = false;
-                betDecreaseButton.disabled = false;
-                return;
-            }
-            playerData.balance -= cost;
-        } else {
-            freeSpinsRemaining--;
-            freeSpinsCountDisplay.textContent = freeSpinsRemaining;
-        }
-
-        balanceDisplay.textContent = Math.round(playerData.balance);
-        spinWinAmount.textContent = 0;
-        let totalWinThisSpin = 0;
-
+    async function runSpinSequence() {
         populateInitialGrid();
         await wait(500);
 
-        const scatterCheck = calculateWinnings(false);
+        let totalWinThisSpin = 0;
+
+        const initialScatterCheck = calculateWinnings(false);
         const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
-        if (scatterCount >= 4) {
-            totalWinThisSpin += scatterCheck.totalWin;
+        if (scatterCount >= 4 && gameState === 'normal') {
+            const scatterWin = initialScatterCheck.totalWin; // Scatter win is based on all symbols
+            totalWinThisSpin += scatterWin;
         }
 
         while (true) {
@@ -380,42 +353,54 @@ window.addEventListener('load', () => {
                 totalWinThisSpin *= totalMultiplier;
             }
         }
-
-        if (totalWinThisSpin > 0) {
-            if (gameState === 'bonus') {
-                totalBonusWin += totalWinThisSpin;
-                totalBonusWinDisplay.textContent = Math.round(totalBonusWin);
-            } else {
-                playerData.balance += totalWinThisSpin;
-                balanceDisplay.textContent = Math.round(playerData.balance);
-            }
-            spinWinAmount.textContent = Math.round(totalWinThisSpin);
-        }
-
-        if (gameState === 'normal' && scatterCount >= 4) {
-            await wait(500);
-            bonusTriggerModal.classList.remove('hidden');
-        } else if (gameState === 'bonus' && freeSpinsRemaining <= 0) {
-            await wait(1000);
-            alert(`Bonus turu bitti! Toplam kazanç: ${Math.round(totalBonusWin)}`);
-            playerData.balance += totalBonusWin;
-            balanceDisplay.textContent = Math.round(playerData.balance);
-            gameState = 'normal';
-            bonusOverlay.classList.add('hidden');
-        }
         
-        localStorage.setItem(playerData.username, JSON.stringify(playerData));
-        
-        if (gameState === 'normal') {
+        return { finalWin: totalWinThisSpin, scatterCount: scatterCount };
+    }
+
+    async function handleSpinLogic(isBonusBuy = false) {
+        if (isSpinning) return;
+        isSpinning = true;
+        spinButton.disabled = true;
+        buyBonusButton.disabled = true;
+        betIncreaseButton.disabled = true;
+        betDecreaseButton.disabled = true;
+
+        const baseBet = betLevels[currentBetIndex];
+        const cost = isBonusBuy ? baseBet * 100 : (isAnteBetActive ? baseBet * 1.25 : baseBet);
+
+        if (playerData.balance < cost) {
+            alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
             isSpinning = false;
             spinButton.disabled = false;
             buyBonusButton.disabled = isAnteBetActive;
             betIncreaseButton.disabled = false;
             betDecreaseButton.disabled = false;
-        } else {
-            await wait(1000);
-            handleSpinLogic();
+            return;
         }
+
+        playerData.balance -= cost;
+        balanceDisplay.textContent = Math.round(playerData.balance);
+        spinWinAmount.textContent = 0;
+        
+        const { finalWin, scatterCount } = await runSpinSequence();
+
+        if (finalWin > 0) {
+            playerData.balance += finalWin;
+            balanceDisplay.textContent = Math.round(playerData.balance);
+            spinWinAmount.textContent = Math.round(finalWin);
+        }
+
+        if (scatterCount >= 4) {
+            await wait(500);
+            bonusTriggerModal.classList.remove('hidden');
+        }
+        
+        localStorage.setItem(playerData.username, JSON.stringify(playerData));
+        isSpinning = false;
+        spinButton.disabled = false;
+        buyBonusButton.disabled = isAnteBetActive;
+        betIncreaseButton.disabled = false;
+        betDecreaseButton.disabled = false;
     }
     
     function updateBetDisplay() {
@@ -449,11 +434,60 @@ window.addEventListener('load', () => {
         document.querySelector(`.info-page[data-page="${pageNumber}"]`).classList.add('active-page');
         infoPageIndicator.textContent = `${pageNumber} / ${infoTotalPages}`;
     }
+
+    async function startBonusRound() {
+        gameState = 'bonus';
+        freeSpinsRemaining = 10;
+        totalBonusWin = 0;
+        freeSpinsCountDisplay.textContent = freeSpinsRemaining;
+        totalBonusWinDisplay.textContent = 0;
+        bonusOverlay.classList.remove('hidden');
+        
+        while (freeSpinsRemaining > 0) {
+            isSpinning = true;
+            spinButton.disabled = true;
+            freeSpinsRemaining--;
+            freeSpinsCountDisplay.textContent = freeSpinsRemaining;
+            
+            const { finalWin, scatterCount } = await runSpinSequence();
+            
+            if (finalWin > 0) {
+                totalBonusWin += finalWin;
+                totalBonusWinDisplay.textContent = Math.round(totalBonusWin);
+            }
+            // Bonus içinde 3+ scatter gelirse +5 spin verir
+            if(scatterCount >= 3) {
+                freeSpinsRemaining += 5;
+                freeSpinsCountDisplay.textContent = freeSpinsRemaining;
+                await wait(500);
+                alert('+5 Free Spins!');
+            }
+
+            await wait(1000);
+        }
+
+        // Bonus Bitişi
+        await wait(500);
+        alert(`Bonus turu bitti! Toplam kazanç: ${Math.round(totalBonusWin)}`);
+        playerData.balance += totalBonusWin;
+        balanceDisplay.textContent = Math.round(playerData.balance);
+        localStorage.setItem(playerData.username, JSON.stringify(playerData));
+        
+        gameState = 'normal';
+        bonusOverlay.classList.add('hidden');
+        isSpinning = false;
+        spinButton.disabled = false;
+        buyBonusButton.disabled = isAnteBetActive;
+        betIncreaseButton.disabled = false;
+        betDecreaseButton.disabled = false;
+    }
+
+    // --- OLAY DİNLEYİCİLERİ ---
     
-    // Olay Dinleyicileri
     document.querySelectorAll('#language-selector button').forEach(button => {
         button.addEventListener('click', () => setLanguage(button.dataset.lang));
     });
+
     loginButton.addEventListener('click', () => {
         const username = usernameInput.value.trim();
         const email = emailInput.value.trim();
@@ -484,6 +518,7 @@ window.addEventListener('load', () => {
             gameScreen.style.display = 'flex';
         }, 2000);
     });
+
     betIncreaseButton.addEventListener('click', () => {
         if (isSpinning) return;
         if (currentBetIndex < betLevels.length - 1) {
@@ -491,6 +526,7 @@ window.addEventListener('load', () => {
             updateBetDisplay();
         }
     });
+
     betDecreaseButton.addEventListener('click', () => {
         if (isSpinning) return;
         if (currentBetIndex > 0) {
@@ -498,7 +534,13 @@ window.addEventListener('load', () => {
             updateBetDisplay();
         }
     });
-    spinButton.addEventListener('click', () => handleSpinLogic(false));
+
+    spinButton.addEventListener('click', () => {
+        if (gameState === 'normal') {
+            handleSpinLogic(false)
+        }
+    });
+    
     buyBonusButton.addEventListener('click', () => {
         if (isSpinning) return;
         const currentBet = betLevels[currentBetIndex];
@@ -507,39 +549,50 @@ window.addEventListener('load', () => {
         buyBonusModal.classList.remove('hidden');
         buyBonusModal.style.display = 'flex';
     });
+
     cancelBuyButton.addEventListener('click', () => buyBonusModal.classList.add('hidden'));
+    
     confirmBuyButton.addEventListener('click', () => {
+        const currentBet = betLevels[currentBetIndex];
+        const cost = currentBet * 100;
+        if (playerData.balance < cost) {
+            alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!': 'Insufficient balance!');
+            return;
+        }
+        playerData.balance -= cost;
+        balanceDisplay.textContent = Math.round(playerData.balance);
+        localStorage.setItem(playerData.username, JSON.stringify(playerData));
         buyBonusModal.classList.add('hidden');
-        handleSpinLogic(true);
+        bonusTriggerModal.classList.remove('hidden');
     });
+    
     infoButton.addEventListener('click', () => {
         infoModal.classList.remove('hidden');
         infoModal.style.display = 'flex';
     });
+    
     closeInfoModalButton.addEventListener('click', () => infoModal.classList.add('hidden'));
+    
     infoNextButton.addEventListener('click', () => {
         if (infoCurrentPage < infoTotalPages) showInfoPage(infoCurrentPage + 1);
     });
+    
     infoPrevButton.addEventListener('click', () => {
         if (infoCurrentPage > 1) showInfoPage(infoCurrentPage - 1);
     });
+
     anteBetCheckbox.addEventListener('change', () => {
         isAnteBetActive = anteBetCheckbox.checked;
         buyBonusButton.disabled = isAnteBetActive;
         updateBetDisplay();
     });
+
     startBonusButton.addEventListener('click', () => {
         bonusTriggerModal.classList.add('hidden');
-        gameState = 'bonus';
-        freeSpinsRemaining = 10;
-        totalBonusWin = 0;
-        freeSpinsCountDisplay.textContent = freeSpinsRemaining;
-        totalBonusWinDisplay.textContent = 0;
-        bonusOverlay.classList.remove('hidden');
-        handleSpinLogic();
+        startBonusRound();
     });
 
-    // Başlangıç Ayarları
+    // BAŞLANGIÇ AYARLARI
     setLanguage(localStorage.getItem('language') || 'en');
     updateBetDisplay();
     populateInfoModal();
