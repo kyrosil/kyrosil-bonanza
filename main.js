@@ -95,7 +95,7 @@ function createReel(isAnte) {
     const weights = {
         'banana': 20, 'watermelon': 18, 'cucumber': 16, 'apple': 14,
         'peach': 12, 'cherry': 10, 'gem_green': 8, 'gem_purple': 6, 'heart_red': 4,
-        'scatter': isAnte ? 8 : 4
+        'scatter': isAnte ? 7 : 4 // Dengeleme yapıldı
     };
     for (const symbolName in weights) {
         const symbolData = gameSymbols.find(s => s.name === symbolName);
@@ -207,7 +207,7 @@ window.addEventListener('load', () => {
         }
     }
 
-    function calculateWinnings() {
+    function calculateWinnings(ignoreScatters = false) {
         const counts = {};
         const winningIndices = new Set();
         currentGridSymbols.forEach((symbol) => {
@@ -218,6 +218,8 @@ window.addEventListener('load', () => {
         for (const symbolName in counts) {
             const count = counts[symbolName];
             if (payTable[symbolName]) {
+                if(ignoreScatters && symbolName === 'scatter') continue; // Döngüdeyken scatter'ı yok say
+
                 const payoutTiers = payTable[symbolName];
                 let winMultiplier = 0;
                 if (count >= 12 && payoutTiers[12]) winMultiplier = payoutTiers[12];
@@ -277,10 +279,9 @@ window.addEventListener('load', () => {
 
         currentGridSymbols = newGridSymbols;
         gameGrid.innerHTML = '';
-        currentGridSymbols.forEach((symbolData, i) => {
+        currentGridSymbols.forEach((symbolData) => {
             const symbolElement = createSymbolElement(symbolData);
             symbolElement.style.animation = `dropIn 0.5s ease-out forwards`;
-            symbolElement.style.animationDelay = `${(i * 0.01)}s`;
             gameGrid.appendChild(symbolElement);
         });
         
@@ -300,7 +301,7 @@ window.addEventListener('load', () => {
 
         if (playerData.balance < cost) {
             alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
-            isSpinning = false; // Enable buttons
+            isSpinning = false;
             spinButton.disabled = false;
             buyBonusButton.disabled = isAnteBetActive;
             betIncreaseButton.disabled = false;
@@ -316,8 +317,18 @@ window.addEventListener('load', () => {
         populateInitialGrid();
         await wait(500);
 
+        // HATA DÜZELTME: Scatter ödemesini döngüden ÖNCE bir kere yap.
+        const initialScatterCheck = calculateWinnings(false);
+        const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
+        if (scatterCount >= 4) {
+            const scatterWin = initialScatterCheck.totalWin;
+            totalSpinWin += scatterWin;
+            spinWinAmount.textContent = Math.round(totalSpinWin);
+        }
+
+        // Tumble döngüsü artık Scatter'ları görmezden gelecek.
         while (true) {
-            const { totalWin, winningIndices } = calculateWinnings();
+            const { totalWin, winningIndices } = calculateWinnings(true); // true = ignore scatters
 
             if (totalWin > 0) {
                 totalSpinWin += totalWin;
@@ -333,7 +344,6 @@ window.addEventListener('load', () => {
             balanceDisplay.textContent = Math.round(playerData.balance);
         }
 
-        const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
         if (scatterCount >= 4) {
             await wait(500);
             alert(currentLanguage === 'tr' ? 'TEBRİKLER! BONUS TURU BAŞLADI!' : 'CONGRATULATIONS! BONUS ROUND STARTED!');
