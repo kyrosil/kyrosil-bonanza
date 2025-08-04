@@ -13,8 +13,11 @@ const languageStrings = {
         welcome_text: "Hoş Geldin",
         balance_text: "Bakiye",
         bet_text: "BAHİS",
-        spin_button: "ÇEVİR",
-        buy_bonus_button: "★ BONUS SATIN AL"
+        buy_bonus_button: "★ BONUS SATIN AL",
+        bonus_modal_title: "Satın Alımı Onayla",
+        bonus_modal_text_1: "Bonus Özelliğini",
+        bonus_modal_confirm: "Evet, Satın Al",
+        bonus_modal_cancel: "Vazgeç"
     },
     en: {
         loading_text: "Game Loading...",
@@ -30,8 +33,11 @@ const languageStrings = {
         welcome_text: "Welcome",
         balance_text: "Balance",
         bet_text: "BET",
-        spin_button: "SPIN",
-        buy_bonus_button: "★ BUY BONUS"
+        buy_bonus_button: "★ BUY BONUS",
+        bonus_modal_title: "Confirm Purchase",
+        bonus_modal_text_1: "Do you want to buy the Bonus Feature for",
+        bonus_modal_confirm: "Yes, Buy",
+        bonus_modal_cancel: "Cancel"
     }
 };
 const gameSymbols = [
@@ -68,6 +74,10 @@ window.addEventListener('load', () => {
     const spinButton = document.getElementById('spin-button');
     const buyBonusButton = document.getElementById('buy-bonus-button');
     const gameGrid = document.getElementById('game-grid');
+    const buyBonusModal = document.getElementById('buy-bonus-modal');
+    const bonusCostDisplay = document.getElementById('bonus-cost-display');
+    const confirmBuyButton = document.getElementById('confirm-buy-button');
+    const cancelBuyButton = document.getElementById('cancel-buy-button');
 
     const betLevels = [20, 50, 100, 200, 500, 1000];
     let currentBetIndex = 2;
@@ -191,6 +201,18 @@ window.addEventListener('load', () => {
     buyBonusButton.addEventListener('click', () => {
         const currentBet = betLevels[currentBetIndex];
         const bonusCost = currentBet * 100;
+        bonusCostDisplay.textContent = bonusCost;
+        buyBonusModal.classList.remove('hidden');
+        buyBonusModal.style.display = 'flex';
+    });
+
+    cancelBuyButton.addEventListener('click', () => {
+        buyBonusModal.classList.add('hidden');
+    });
+
+    confirmBuyButton.addEventListener('click', () => {
+        const currentBet = betLevels[currentBetIndex];
+        const bonusCost = currentBet * 100;
         if (playerData.balance < bonusCost) {
             alert(currentLanguage === 'tr' ? `Yetersiz bakiye! Bonus için ${bonusCost} Kyroslira gerekli.` : `Insufficient balance! Bonus requires ${bonusCost} Kyroslira.`);
             return;
@@ -198,6 +220,7 @@ window.addEventListener('load', () => {
         playerData.balance -= bonusCost;
         balanceDisplay.textContent = playerData.balance;
         localStorage.setItem(playerData.username, JSON.stringify(playerData));
+        buyBonusModal.classList.add('hidden');
         alert(currentLanguage === 'tr' ? 'Bonus Turu Başlıyor!' : 'Bonus Round Starting!');
         populateGrid();
     });
