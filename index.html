@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kyrosil Bonanza</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="main.js" defer></script>
 </head>
@@ -29,7 +32,7 @@
             <h2 data-key="login_title">Game Login</h2>
             <p data-key="login_desc">Enter your details to start.</p>
             
-            <input type="text" id="username-input" data-key-placeholder="username_placeholder" placeholder="Username">
+            <input type="text" id="username-input" data-key-placeholder="username_placeholder" placeholder="Instagram or EU Portal Name">
             <input type="email" id="email-input" data-key-placeholder="email_placeholder" placeholder="Email Address">
             <button id="login-button" data-key="login_button">Start Game</button>
             
@@ -49,6 +52,8 @@
     </div>
 
     <div id="game-screen" class="screen hidden">
+        <div id="extra-spins-toast" class="hidden"></div>
+
         <div class="game-header">
             <div id="player-info"><span data-key="welcome_text">Welcome</span>, <span id="player-username"></span>!</div>
             
