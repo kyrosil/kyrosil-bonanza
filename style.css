@@ -4,12 +4,13 @@
     --dark-bg: #1a1a2e;
     --dark-secondary: #16213e;
     --text-color: #fff;
+    --gold-color: #ffd700;
 }
 
 body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    background-color: var(--dark-bg);
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle, rgba(40,40,70,1) 0%, rgba(26,26,46,1) 100%);
     color: var(--text-color);
     overflow: hidden;
     -webkit-user-select: none;
@@ -39,8 +40,7 @@ body {
     position: absolute;
     top: 15px;
     right: 15px;
-    z-index: 100;
-    transition: opacity 0.3s;
+    z-index: 1100;
 }
 #language-selector button {
     background: var(--dark-secondary);
@@ -50,9 +50,14 @@ body {
     margin-left: 5px;
     cursor: pointer;
     border-radius: 5px;
+    transition: background-color 0.2s;
+}
+#language-selector button:hover {
+    background-color: var(--primary-color);
 }
 #language-selector button.active {
     background: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
 }
 
 /* Yükleme Ekranı */
@@ -70,6 +75,7 @@ body {
     font-size: 48px;
     color: var(--primary-color);
     margin: 0;
+    text-shadow: 0 0 15px var(--primary-color);
 }
 .progress-bar-container {
     width: 250px;
@@ -77,11 +83,12 @@ body {
     background-color: var(--dark-secondary);
     border-radius: 10px;
     border: 1px solid var(--primary-color);
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
 }
 #progress-bar {
     width: 0%;
     height: 100%;
-    background-color: var(--primary-color);
+    background: linear-gradient(90deg, #e94560, #ff7b54);
     border-radius: 10px;
     transition: width 0.1s linear;
 }
@@ -102,33 +109,37 @@ body {
     padding: 40px;
     border-radius: 10px;
     text-align: center;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     max-width: 500px;
     width: 90%;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 .login-box input {
     width: 80%;
-    padding: 10px;
+    padding: 12px;
     margin-top: 10px;
     border: 1px solid #0f3460;
     border-radius: 5px;
     background-color: var(--dark-bg);
     color: var(--text-color);
+    font-size: 16px;
 }
 .login-box button {
     width: 85%;
     padding: 12px;
     margin-top: 20px;
-    background-color: var(--primary-color);
+    background: linear-gradient(45deg, #e94560, #ff7b54);
     color: var(--text-color);
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 .login-box button:hover {
-    background-color: #c73a51;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
 }
 
 /* Bilgi Kutusu Stili */
@@ -169,7 +180,33 @@ body {
     padding: 10px;
     box-sizing: border-box;
     gap: 10px;
+    position: relative; /* Toast için */
 }
+
+/* EKSTRA SPİN BİLDİRİMİ */
+#extra-spins-toast {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(45deg, rgba(255,215,0,0.95), rgba(255,165,0,0.95));
+    color: white;
+    padding: 20px 40px;
+    font-size: 32px;
+    font-weight: bold;
+    border-radius: 15px;
+    z-index: 50;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    animation: fadeInOut 2s ease-in-out forwards;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+}
+
 
 .game-header {
     width: 100%;
@@ -188,6 +225,7 @@ body {
     padding: 8px 15px;
     border-radius: 20px;
     gap: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 .balance-container, .bet-container {
     text-align: center;
@@ -196,6 +234,7 @@ body {
     display: block;
     font-size: 12px;
     color: #aaa;
+    font-weight: bold;
 }
 #balance-display, #bet-amount {
     font-size: 18px;
@@ -212,24 +251,28 @@ body {
     background-color: var(--dark-secondary);
     color: var(--text-color);
     border: 1px solid var(--primary-color);
-    width: 25px;
-    height: 25px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
     padding: 0;
-    line-height: 25px;
+    line-height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.2s;
+}
+#bet-decrease:hover, #bet-increase:hover {
+    background-color: var(--primary-color);
 }
 
 #game-grid {
     width: 100%;
     max-width: 80vh;
     aspect-ratio: 6 / 5;
-    background-color: rgba(15, 52, 96, 0.5);
+    background: radial-gradient(circle, rgba(15, 52, 96, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%);
     border: 3px solid var(--primary-color);
     border-radius: 10px;
     display: grid;
@@ -238,19 +281,23 @@ body {
     gap: 5px;
     padding: 5px;
     position: relative;
+    box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
 }
 
 #bonus-overlay {
     position: absolute;
-    top: 0;
+    top: -5px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     gap: 20px;
-    padding: 10px;
+    padding: 10px 20px;
     background-color: rgba(0,0,0,0.5);
-    border-radius: 0 0 10px 10px;
+    border-radius: 0 0 20px 20px;
     z-index: 15;
+    border: 2px solid var(--primary-color);
+    border-top: none;
+    box-shadow: 0 5px 15px rgba(233, 69, 96, 0.3);
 }
 .bonus-info-box {
     text-align: center;
@@ -264,7 +311,7 @@ body {
 #total-bonus-win-amount, #free-spins-count {
     font-size: 24px;
     font-weight: bold;
-    color: gold;
+    color: var(--gold-color);
 }
 
 .symbol {
@@ -282,8 +329,9 @@ body {
 
 .symbol.winning {
     transform: scale(1.1);
-    box-shadow: 0 0 15px gold;
+    box-shadow: 0 0 15px var(--gold-color);
     background-color: rgba(255, 215, 0, 0.3);
+    border-radius: 50%;
 }
 
 .symbol.disappearing {
@@ -296,6 +344,7 @@ body {
     object-fit: contain;
     -webkit-user-drag: none;
     user-select: none;
+    filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.5));
 }
 
 .symbol img[alt="peach"] {
@@ -353,6 +402,11 @@ body {
     font-weight: bold;
     cursor: pointer;
     line-height: 1;
+    transition: background-color 0.2s;
+}
+#info-button:hover {
+    background-color: var(--primary-color);
+    color: white;
 }
 
 #spin-win-display {
@@ -361,18 +415,19 @@ body {
     border-radius: 10px;
     text-align: center;
     min-width: 100px;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 #spin-win-display span {
     display: block;
 }
 #spin-win-amount {
     font-size: 24px;
-    color: gold;
+    color: var(--gold-color);
     font-weight: bold;
 }
 
 #spin-button {
-    background-color: #5cb85c;
+    background: linear-gradient(45deg, #28a745, #218838);
     color: white;
     width: 80px;
     height: 80px;
@@ -382,10 +437,16 @@ body {
     line-height: 1;
     padding-bottom: 5px;
     cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+#spin-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #28a745;
 }
 
+
 #buy-bonus-button {
-    background-color: #f0ad4e;
+    background: linear-gradient(45deg, #ffc107, #e0a800);
     color: white;
     padding: 15px 25px;
     font-size: 16px;
@@ -393,12 +454,20 @@ body {
     font-weight: bold;
     border: none;
     cursor: pointer;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+#buy-bonus-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
 }
 
 #buy-bonus-button:disabled {
-    background-color: #6c757d;
+    background: #6c757d;
     cursor: not-allowed;
     opacity: 0.6;
+    transform: none;
+    box-shadow: none;
 }
 
 /* ANTE BET ANAHTARI */
@@ -436,7 +505,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
+    background-color: #4f4f4f;
     transition: .4s;
     border-radius: 34px;
 }
@@ -513,6 +582,7 @@ input:checked + .slider:before {
     border-radius: 15px;
     text-align: center;
     border: 2px solid var(--primary-color);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
     max-width: 400px;
     width: 90%;
     position: relative;
@@ -531,6 +601,7 @@ input:checked + .slider:before {
 
 .modal-content h2 {
     margin-top: 0;
+    color: var(--primary-color);
 }
 
 .modal-content p {
@@ -538,8 +609,8 @@ input:checked + .slider:before {
     line-height: 1.6;
 }
 
-#bonus-cost-display {
-    color: var(--primary-color);
+#bonus-cost-display, #final-bonus-win-amount {
+    color: var(--gold-color);
     font-weight: bold;
 }
 
@@ -558,10 +629,17 @@ input:checked + .slider:before {
     font-weight: bold;
     cursor: pointer;
     color: var(--text-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.modal-button:hover {
+    transform: translateY(-2px);
 }
 
 .modal-button.confirm {
-    background-color: #5cb85c;
+    background: linear-gradient(45deg, #28a745, #218838);
+}
+.modal-button.confirm:hover {
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
 }
 
 .modal-button.cancel {
@@ -630,7 +708,6 @@ input:checked + .slider:before {
 #final-bonus-win-amount {
     display: block;
     font-size: 48px;
-    color: gold;
     font-weight: bold;
     margin: 10px 0 20px 0;
     animation: pulse 1.5s infinite;
