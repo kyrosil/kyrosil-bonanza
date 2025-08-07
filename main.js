@@ -271,21 +271,19 @@ window.addEventListener('load', () => {
         return reel[Math.floor(Math.random() * reel.length)];
     }
     
-    function populateGrid(isInitial = false) {
+    function populateGrid() {
         allElements.gameGrid.innerHTML = '';
         currentGridSymbols = [];
         for (let i = 0; i < 30; i++) {
             const randomSymbolData = getRandomSymbol();
             currentGridSymbols.push(randomSymbolData);
             const symbolElement = createSymbolElement(randomSymbolData, i);
-            if(isInitial){
-                symbolElement.style.opacity = '0';
-                symbolElement.style.transform = 'translateY(-50px)';
-                setTimeout(() => {
-                    symbolElement.style.opacity = '1';
-                    symbolElement.style.transform = 'translateY(0)';
-                }, 50 + (i * 20));
-            }
+            symbolElement.style.opacity = '0';
+            symbolElement.style.transform = 'translateY(-50px)';
+            setTimeout(() => {
+                symbolElement.style.opacity = '1';
+                symbolElement.style.transform = 'translateY(0)';
+            }, 50 + (i * 20));
             allElements.gameGrid.appendChild(symbolElement);
         }
     }
@@ -338,8 +336,9 @@ window.addEventListener('load', () => {
         await Promise.all(promises);
         
         winningIndices.forEach(index => {
-            if(gridElements[index].parentNode === allElements.gameGrid) {
-                allElements.gameGrid.removeChild(gridElements[index]);
+            const element = gridElements[index];
+            if (element && element.parentNode === allElements.gameGrid) {
+                allElements.gameGrid.removeChild(element);
             }
         });
         
@@ -354,7 +353,7 @@ window.addEventListener('load', () => {
                 if (currentGridSymbols[index] === null) {
                     emptySlots++;
                 } else if (emptySlots > 0) {
-                    const elementToMove = allElements.gameGrid.querySelector(`[style*="top: ${row * 20}%"][style*="left: ${col * (100/6)}%"]`);
+                    const elementToMove = allElements.gameGrid.querySelector(`.symbol[style*="top: ${row * 20}%"][style*="left: ${col * (100/6)}%"]`);
                     if(elementToMove){
                         const newRow = row + emptySlots;
                         elementToMove.style.top = `${newRow * 20}%`;
@@ -366,13 +365,13 @@ window.addEventListener('load', () => {
             }
 
             for (let i = 0; i < emptySlots; i++) {
-                const newSymbolData = getRandomSymbol(gameState === 'bonus');
+                const newSymbolData = getRandomSymbol();
                 const index = i * 6 + col;
                 currentGridSymbols[index] = newSymbolData;
                 const newElement = createSymbolElement(newSymbolData, index);
-                newElement.style.transform = `translateY(-${(emptySlots - i) * 60}px)`; // Start off-screen
+                newElement.style.transform = `translateY(-${(emptySlots - i) * 60}px)`;
                 allElements.gameGrid.appendChild(newElement);
-                await wait(50); // Stagger the drop
+                await wait(50);
                 newElement.style.transform = 'translateY(0)';
             }
         }
@@ -386,7 +385,7 @@ window.addEventListener('load', () => {
         let totalWinThisSequence = 0;
 
         while (true) {
-            const { totalWin, winningIndices } = calculateWinnings(true);
+            const { totalWin, winningIndices } = calculateWinnings(true); 
             if (winningIndices.size > 0) {
                 totalWinThisSequence += totalWin;
                 allElements.spinWinAmount.textContent = Math.round(totalWinThisSequence);
@@ -458,14 +457,10 @@ window.addEventListener('load', () => {
     }
     
     async function startBonusRound(isBought = false) {
-        if (isSpinning) {
-             return;
-        }
-        
-        isSpinning = true;
         setButtonsState(false);
+        isSpinning = true;
 
-        if(isBought) {
+        if (isBought) {
             const baseBet = betLevels[currentBetIndex];
             const cost = baseBet * 100;
             if (playerData.balance < cost) {
@@ -662,7 +657,6 @@ window.addEventListener('load', () => {
         });
     }
 
-    // --- BAŞLANGIÇ AYARLARI ---
     setLanguage(localStorage.getItem('language') || 'en');
     updateBetDisplay();
     populateInfoModal();
