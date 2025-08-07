@@ -198,6 +198,24 @@ const tasks = [
     { id: 'task_visit', textKey: 'task_visit_text', reward: 10000, url: 'http://kyrosil.eu', daily: false },
 ];
 
+const rewards = [
+    { id: 1, nameKey: 'reward1_name', price: 350000, img: 'scatter.png', descKey: 'reward1_desc', validityKey: 'reward1_validity' },
+    { id: 2, nameKey: 'reward2_name', price: 500000, img: 'scatter.png', descKey: 'reward2_desc', validityKey: 'reward2_validity' },
+    { id: 3, nameKey: 'reward3_name', price: 250000, img: 'scatter.png', descKey: 'reward3_desc', validityKey: 'reward3_validity' },
+    { id: 4, nameKey: 'reward4_name', price: 150000, img: 'scatter.png', descKey: 'reward4_desc', validityKey: 'reward4_validity' },
+    { id: 5, nameKey: 'reward5_name', price: 180000, img: 'scatter.png', descKey: 'reward5_desc', validityKey: 'reward5_validity' },
+    { id: 6, nameKey: 'reward6_name', price: 120000, img: 'scatter.png', descKey: 'reward6_desc', validityKey: 'reward6_validity' },
+    { id: 7, nameKey: 'reward7_name', price: 220000, img: 'scatter.png', descKey: 'reward7_desc', validityKey: 'reward7_validity' },
+    { id: 8, nameKey: 'reward8_name', price: 140000, img: 'scatter.png', descKey: 'reward8_desc', validityKey: 'reward8_validity' },
+    { id: 9, nameKey: 'reward9_name', price: 300000, img: 'scatter.png', descKey: 'reward9_desc', validityKey: 'reward9_validity' },
+    { id: 10, nameKey: 'reward10_name', price: 200000, img: 'scatter.png', descKey: 'reward10_desc', validityKey: 'reward10_validity' },
+    { id: 11, nameKey: 'reward11_name', price: 100000, img: 'scatter.png', descKey: 'reward11_desc', validityKey: 'reward11_validity' },
+    { id: 12, nameKey: 'reward12_name', price: 125000, img: 'scatter.png', descKey: 'reward12_desc', validityKey: 'reward12_validity' },
+    { id: 13, nameKey: 'reward13_name', price: 75000, img: 'scatter.png', descKey: 'reward13_desc', validityKey: 'reward13_validity' },
+    { id: 14, nameKey: 'reward14_name', price: 500000, img: 'scatter.png', descKey: 'reward14_desc', validityKey: 'reward14_validity' },
+    { id: 15, nameKey: 'reward15_name', price: 480000, img: 'scatter.png', descKey: 'reward15_desc', validityKey: 'reward15_validity' },
+];
+
 const gameSymbols = [
     { name: 'banana', file: 'symbol_banana.png', type: 'normal' },
     { name: 'watermelon', file: 'symbol_watermelon.png', type: 'normal' },
@@ -377,12 +395,10 @@ window.addEventListener('load', () => {
             valueSpan.textContent = `${symbolData.value}x`;
             symbolDiv.appendChild(valueSpan);
         }
-        
         const row = Math.floor(index / 6);
         const col = index % 6;
         symbolDiv.style.top = `${row * 20}%`;
         symbolDiv.style.left = `${col * (100/6)}%`;
-
         return symbolDiv;
     }
 
@@ -481,7 +497,7 @@ window.addEventListener('load', () => {
                 if (currentGridSymbols[index] === null) {
                     emptySlots++;
                 } else if (emptySlots > 0) {
-                    const elementToMove = allElements.gameGrid.querySelector(`[style*="top: ${row * 20}%"][style*="left: ${col * (100/6)}%"]`);
+                    const elementToMove = allElements.gameGrid.querySelector(`.symbol[style*="top: ${row * 20}%"][style*="left: ${col * (100/6)}%"]`);
                     if(elementToMove){
                         const newRow = row + emptySlots;
                         elementToMove.style.top = `${newRow * 20}%`;
@@ -585,6 +601,12 @@ window.addEventListener('load', () => {
     }
     
     async function startBonusRound(isBought = false) {
+        if (isSpinning && !isBought) {
+             isSpinning = false;
+             setButtonsState(true);
+             return;
+        }
+        
         isSpinning = true;
         setButtonsState(false);
 
@@ -686,18 +708,6 @@ window.addEventListener('load', () => {
         allElements.extraSpinsToast.classList.add('hidden');
     }
     
-    function updateRewardsPreview() {
-        const previewCount = 3; 
-        const previewRewards = rewards.slice(0, previewCount);
-        let listHTML = '<ul>';
-        previewRewards.forEach(reward => {
-            const name = languageStrings[currentLanguage][reward.nameKey] || reward.nameKey;
-            listHTML += `<li>${name} - ${reward.price.toLocaleString()} Kyroslira</li>`;
-        });
-        listHTML += '</ul>';
-        allElements.rewardsPreviewList.innerHTML = listHTML;
-    }
-
     function attachEventListeners() {
         document.querySelectorAll('#language-selector button').forEach(button => {
             button.addEventListener('click', () => setLanguage(button.dataset.lang));
@@ -863,6 +873,19 @@ window.addEventListener('load', () => {
             taskItem.appendChild(taskButton);
             allElements.tasksList.appendChild(taskItem);
         });
+    }
+    
+    function updateRewardsPreview() {
+        if (!allElements.rewardsPreviewList) return;
+        const previewCount = 3; 
+        let listHTML = '<ul>';
+        for(let i = 0; i < previewCount && i < rewards.length; i++) {
+            const reward = rewards[i];
+            const name = languageStrings[currentLanguage][reward.nameKey] || reward.nameKey;
+            listHTML += `<li>${name}</li>`;
+        }
+        listHTML += '</ul>';
+        allElements.rewardsPreviewList.innerHTML = listHTML;
     }
 
     attachEventListeners();
