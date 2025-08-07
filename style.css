@@ -180,10 +180,9 @@ body {
     padding: 10px;
     box-sizing: border-box;
     gap: 10px;
-    position: relative; /* Toast için */
+    position: relative;
 }
 
-/* EKSTRA SPİN BİLDİRİMİ */
 #extra-spins-toast {
     position: absolute;
     top: 50%;
@@ -275,13 +274,9 @@ body {
     background: radial-gradient(circle, rgba(15, 52, 96, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%);
     border: 3px solid var(--primary-color);
     border-radius: 10px;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    gap: 5px;
-    padding: 5px;
     position: relative;
     box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+    overflow: hidden;
 }
 
 #bonus-overlay {
@@ -322,20 +317,28 @@ body {
     padding: 5px;
     box-sizing: border-box;
     opacity: 1;
-    transform: translateY(0);
-    transition: transform 0.3s ease-in-out;
-    position: relative;
+    position: absolute; /* ÖNEMLİ DEĞİŞİKLİK */
+    width: calc(100% / 6);
+    height: calc(100% / 5);
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
 }
 
 .symbol.winning {
-    transform: scale(1.1);
-    box-shadow: 0 0 15px var(--gold-color);
+    animation: winning-pulse 0.5s ease-in-out forwards;
     background-color: rgba(255, 215, 0, 0.3);
     border-radius: 50%;
 }
 
+@keyframes winning-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
 .symbol.disappearing {
-    animation: disappear 0.3s ease-in forwards;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.3s ease-in, opacity 0.3s ease-in;
 }
 
 .symbol img {
@@ -358,28 +361,6 @@ body {
     color: white;
     text-shadow: 0 0 5px black, 0 0 10px black;
     pointer-events: none;
-}
-
-@keyframes dropIn {
-    from {
-        transform: translateY(-50px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-@keyframes disappear {
-    from {
-        transform: scale(1.1);
-        opacity: 1;
-    }
-    to {
-        transform: scale(0);
-        opacity: 0;
-    }
 }
 
 .game-controls {
