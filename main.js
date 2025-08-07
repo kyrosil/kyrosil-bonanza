@@ -271,21 +271,19 @@ window.addEventListener('load', () => {
         return reel[Math.floor(Math.random() * reel.length)];
     }
     
-    function populateGrid(isInitial = false) {
+    function populateGrid() {
         allElements.gameGrid.innerHTML = '';
         currentGridSymbols = [];
         for (let i = 0; i < 30; i++) {
             const randomSymbolData = getRandomSymbol();
             currentGridSymbols.push(randomSymbolData);
             const symbolElement = createSymbolElement(randomSymbolData, i);
-            if (isInitial) {
-                symbolElement.style.opacity = '0';
-                symbolElement.style.transform = 'translateY(-50px)';
-                setTimeout(() => {
-                    symbolElement.style.opacity = '1';
-                    symbolElement.style.transform = 'translateY(0)';
-                }, 50 + (i * 20));
-            }
+            symbolElement.style.opacity = '0';
+            symbolElement.style.transform = 'translateY(-50px)';
+            setTimeout(() => {
+                symbolElement.style.opacity = '1';
+                symbolElement.style.transform = 'translateY(0)';
+            }, 50 + (i * 20));
             allElements.gameGrid.appendChild(symbolElement);
         }
     }
@@ -337,36 +335,31 @@ window.addEventListener('load', () => {
         });
         await Promise.all(promises);
         
-        const newGridSymbols = [...currentGridSymbols];
-        winningIndices.forEach(index => newGridSymbols[index] = null);
+        winningIndices.forEach(index => {
+            currentGridSymbols[index] = null;
+        });
         
         for (let col = 0; col < 6; col++) {
             let emptySlots = 0;
             for (let row = 4; row >= 0; row--) {
                 const index = row * 6 + col;
-                if (newGridSymbols[index] === null) {
+                if (currentGridSymbols[index] === null) {
                     emptySlots++;
                 } else if (emptySlots > 0) {
                     const targetIndex = (row + emptySlots) * 6 + col;
-                    newGridSymbols[targetIndex] = newGridSymbols[index];
-                    newGridSymbols[index] = null;
+                    currentGridSymbols[targetIndex] = currentGridSymbols[index];
+                    currentGridSymbols[index] = null;
                 }
             }
             for (let i = 0; i < emptySlots; i++) {
-                newGridSymbols[i * 6 + col] = getRandomSymbol();
+                currentGridSymbols[i * 6 + col] = getRandomSymbol();
             }
         }
 
-        currentGridSymbols = newGridSymbols;
         allElements.gameGrid.innerHTML = '';
         currentGridSymbols.forEach((symbolData, i) => {
             const symbolElement = createSymbolElement(symbolData, i);
-            symbolElement.style.opacity = '0';
-            symbolElement.style.transform = 'translateY(-50px)';
-            setTimeout(() => {
-                symbolElement.style.opacity = '1';
-                symbolElement.style.transform = 'translateY(0)';
-            }, 50 + (i * 10));
+            symbolElement.style.animation = `dropIn 0.5s ease-out forwards`;
             allElements.gameGrid.appendChild(symbolElement);
         });
         
@@ -380,7 +373,7 @@ window.addEventListener('load', () => {
         let totalWinThisSequence = 0;
 
         while (true) {
-            const { totalWin, winningIndices } = calculateWinnings(true);
+            const { totalWin, winningIndices } = calculateWinnings(true); 
             if (winningIndices.size > 0) {
                 totalWinThisSequence += totalWin;
                 allElements.spinWinAmount.textContent = Math.round(totalWinThisSequence);
@@ -402,7 +395,16 @@ window.addEventListener('load', () => {
             }
         }
         
-        return { finalWin: totalWinThisSequence };
+        const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
+        if (scatterCount >= 4) {
+             const scatterPayTiers = payTable.scatter;
+             const multiplier = scatterPayTiers[scatterCount] || scatterPayTiers[6];
+             if(multiplier) {
+                totalWinThisSequence += betLevels[currentBetIndex] * multiplier;
+             }
+        }
+
+        return { finalWin: totalWinThisSequence, scatterCount };
     }
 
     async function handleNormalSpin() {
@@ -423,17 +425,8 @@ window.addEventListener('load', () => {
         allElements.balanceDisplay.textContent = Math.round(playerData.balance);
         allElements.spinWinAmount.textContent = 0;
         
-        let { finalWin } = await runSpinSequence();
+        const { finalWin, scatterCount } = await runSpinSequence();
         
-        const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
-        if (scatterCount >= 4) {
-             const scatterPayTiers = payTable.scatter;
-             const multiplier = scatterPayTiers[scatterCount] || scatterPayTiers[6];
-             if(multiplier) {
-                finalWin += baseBet * multiplier;
-             }
-        }
-
         if (finalWin > 0) {
             playerData.balance += finalWin;
             allElements.balanceDisplay.textContent = Math.round(playerData.balance);
@@ -442,12 +435,12 @@ window.addEventListener('load', () => {
         
         localStorage.setItem(playerData.username, JSON.stringify(playerData));
         
+        isSpinning = false;
+        setButtonsState(true);
+
         if (scatterCount >= 4) {
             await wait(500);
             allElements.bonusTriggerModal.classList.remove('hidden');
-        } else {
-            isSpinning = false;
-            setButtonsState(true);
         }
     }
     
