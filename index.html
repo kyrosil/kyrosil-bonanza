@@ -97,13 +97,17 @@
                     <span data-key="ante_bet_desc">to win feature</span>
                 </div>
             </div>
-
-            <button id="info-button" title="Info">i</button>
-            <div id="spin-win-display">
-                <span data-key="win_text">WIN</span>
-                <span id="spin-win-amount">0</span>
+            
+            <div class="center-buttons">
+                <button id="tasks-button" title="Tasks">&#127942;</button>
+                <button id="info-button" title="Info">i</button>
+                <div id="spin-win-display" class="hidden">
+                    <span data-key="win_text">WIN</span>
+                    <span id="spin-win-amount">0</span>
+                </div>
+                <button id="spin-button" title="Spin">&#x21bb;</button>
             </div>
-            <button id="spin-button" title="Spin">&#x21bb;</button>
+
             <button id="buy-bonus-button" data-key="buy_bonus_button">&#9733; BUY BONUS</button>
         </div>
     </div>
@@ -151,6 +155,15 @@
             <p data-key="bonus_end_desc">You won a total of</p>
             <span id="final-bonus-win-amount">0</span>
             <button id="close-bonus-end-button" class="modal-button confirm" data-key="bonus_end_close">Continue</button>
+        </div>
+    </div>
+    
+    <div id="tasks-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="close-tasks-modal" class="close-button">&times;</button>
+            <h2 data-key="tasks_title">Tasks & Daily Bonus</h2>
+            <div id="tasks-list">
+                </div>
         </div>
     </div>
 
