@@ -37,7 +37,14 @@ const languageStrings = {
         bonus_end_title: "TEBRİKLER",
         bonus_end_desc: "Toplam kazancın",
         bonus_end_close: "Devam Et",
-        extra_spins_toast: "+5 Bedava Çevirme"
+        extra_spins_toast: "+5 Bedava Çevirme",
+        tasks_title: "Görevler & Günlük Bonus",
+        task_claim_button: "Ödülü Al",
+        task_claimed_button: "Alındı",
+        task_insta_text: "Instagram'da Takip Et",
+        task_eu_text: "EU Portal'da takip et",
+        task_visit_text: "Websitemizi ziyaret et",
+        task_daily_text: "Günlük 5000 Kyroslira"
     },
     en: {
         loading_text: "Game Loading...",
@@ -77,9 +84,23 @@ const languageStrings = {
         bonus_end_title: "CONGRATULATIONS",
         bonus_end_desc: "You won a total of",
         bonus_end_close: "Continue",
-        extra_spins_toast: "+5 Free Spins"
+        extra_spins_toast: "+5 Free Spins",
+        tasks_title: "Tasks & Daily Bonus",
+        task_claim_button: "Claim",
+        task_claimed_button: "Claimed",
+        task_insta_text: "Follow on Instagram",
+        task_eu_text: "Follow on EU Portal",
+        task_visit_text: "Visit our Website",
+        task_daily_text: "Daily 5000 Kyroslira"
     }
 };
+
+const tasks = [
+    { id: 'daily_bonus', textKey: 'task_daily_text', reward: 5000, daily: true },
+    { id: 'task_insta', textKey: 'task_insta_text', reward: 5000, url: 'https://www.instagram.com/kyrosil', daily: false },
+    { id: 'task_eu', textKey: 'task_eu_text', reward: 10000, url: 'https://ecas.ec.europa.eu/cas/login', daily: false },
+    { id: 'task_visit', textKey: 'task_visit_text', reward: 10000, url: 'http://kyrosil.eu', daily: false },
+];
 
 const gameSymbols = [
     { name: 'banana', file: 'symbol_banana.png', type: 'normal' },
@@ -208,6 +229,10 @@ window.addEventListener('load', () => {
         progressBar: document.getElementById('progress-bar'),
         loadingPercentage: document.getElementById('loading-percentage'),
         extraSpinsToast: document.getElementById('extra-spins-toast'),
+        tasksButton: document.getElementById('tasks-button'),
+        tasksModal: document.getElementById('tasks-modal'),
+        closeTasksModalButton: document.getElementById('close-tasks-modal'),
+        tasksList: document.getElementById('tasks-list')
     };
 
     const betLevels = [20, 50, 100, 200, 500, 1000];
@@ -253,12 +278,10 @@ window.addEventListener('load', () => {
             valueSpan.textContent = `${symbolData.value}x`;
             symbolDiv.appendChild(valueSpan);
         }
-        
         const row = Math.floor(index / 6);
         const col = index % 6;
         symbolDiv.style.top = `${row * 20}%`;
         symbolDiv.style.left = `${col * (100/6)}%`;
-
         return symbolDiv;
     }
 
@@ -271,19 +294,21 @@ window.addEventListener('load', () => {
         return reel[Math.floor(Math.random() * reel.length)];
     }
     
-    function populateGrid() {
+    function populateGrid(isInitial = false) {
         allElements.gameGrid.innerHTML = '';
         currentGridSymbols = [];
         for (let i = 0; i < 30; i++) {
             const randomSymbolData = getRandomSymbol();
             currentGridSymbols.push(randomSymbolData);
             const symbolElement = createSymbolElement(randomSymbolData, i);
-            symbolElement.style.opacity = '0';
-            symbolElement.style.transform = 'translateY(-50px)';
-            setTimeout(() => {
-                symbolElement.style.opacity = '1';
-                symbolElement.style.transform = 'translateY(0)';
-            }, 50 + (i * 20));
+            if (isInitial) {
+                symbolElement.style.opacity = '0';
+                symbolElement.style.transform = 'translateY(-50px)';
+                setTimeout(() => {
+                    symbolElement.style.opacity = '1';
+                    symbolElement.style.transform = 'translateY(0)';
+                }, 50 + (i * 20));
+            }
             allElements.gameGrid.appendChild(symbolElement);
         }
     }
@@ -323,39 +348,41 @@ window.addEventListener('load', () => {
 
     async function handleTumbles(winningIndices) {
         const gridElements = Array.from(allElements.gameGrid.children);
-        winningIndices.forEach(index => gridElements[index].classList.add('winning'));
+        winningIndices.forEach(index => gridElements[index]?.classList.add('winning'));
         await wait(500);
         
         const promises = [];
         winningIndices.forEach(index => {
             const element = gridElements[index];
-            element.classList.remove('winning');
-            element.classList.add('disappearing');
-            promises.push(wait(300));
+            if(element) {
+                element.classList.remove('winning');
+                element.classList.add('disappearing');
+                promises.push(wait(300));
+            }
         });
         await Promise.all(promises);
         
-        winningIndices.forEach(index => {
-            currentGridSymbols[index] = null;
-        });
+        const newGridSymbols = [...currentGridSymbols];
+        winningIndices.forEach(index => newGridSymbols[index] = null);
         
         for (let col = 0; col < 6; col++) {
             let emptySlots = 0;
             for (let row = 4; row >= 0; row--) {
                 const index = row * 6 + col;
-                if (currentGridSymbols[index] === null) {
+                if (newGridSymbols[index] === null) {
                     emptySlots++;
                 } else if (emptySlots > 0) {
                     const targetIndex = (row + emptySlots) * 6 + col;
-                    currentGridSymbols[targetIndex] = currentGridSymbols[index];
-                    currentGridSymbols[index] = null;
+                    newGridSymbols[targetIndex] = newGridSymbols[index];
+                    newGridSymbols[index] = null;
                 }
             }
             for (let i = 0; i < emptySlots; i++) {
-                currentGridSymbols[i * 6 + col] = getRandomSymbol();
+                newGridSymbols[i * 6 + col] = getRandomSymbol();
             }
         }
 
+        currentGridSymbols = newGridSymbols;
         allElements.gameGrid.innerHTML = '';
         currentGridSymbols.forEach((symbolData, i) => {
             const symbolElement = createSymbolElement(symbolData, i);
@@ -435,20 +462,18 @@ window.addEventListener('load', () => {
         
         localStorage.setItem(playerData.username, JSON.stringify(playerData));
         
-        isSpinning = false;
-        setButtonsState(true);
-
         if (scatterCount >= 4) {
             await wait(500);
             allElements.bonusTriggerModal.classList.remove('hidden');
+        } else {
+            isSpinning = false;
+            setButtonsState(true);
         }
     }
     
     async function startBonusRound(isBought = false) {
-        if (isSpinning) return;
-        
-        isSpinning = true;
         setButtonsState(false);
+        isSpinning = true;
 
         if(isBought) {
             const baseBet = betLevels[currentBetIndex];
@@ -624,31 +649,110 @@ window.addEventListener('load', () => {
             allElements.infoModal.classList.remove('hidden');
             allElements.infoModal.style.display = 'flex';
         });
+    
         allElements.closeInfoModalButton.addEventListener('click', () => allElements.infoModal.classList.add('hidden'));
+    
         allElements.infoNextButton.addEventListener('click', () => {
             if (infoCurrentPage < infoTotalPages) showInfoPage(infoCurrentPage + 1);
         });
+    
         allElements.infoPrevButton.addEventListener('click', () => {
             if (infoCurrentPage > 1) showInfoPage(infoCurrentPage - 1);
         });
+
         allElements.anteBetCheckbox.addEventListener('change', () => {
             isAnteBetActive = allElements.anteBetCheckbox.checked;
             allElements.buyBonusButton.disabled = isAnteBetActive;
             updateBetDisplay();
         });
+
         allElements.startBonusButton.addEventListener('click', () => {
             allElements.bonusTriggerModal.classList.add('hidden');
+            isSpinning = false; // DÜZELTME: Bonusu başlatmadan önce durumu sıfırla
             startBonusRound(false);
         });
+
         allElements.closeBonusEndButton.addEventListener('click', () => {
             allElements.bonusEndModal.classList.add('hidden');
             setButtonsState(true);
             isSpinning = false;
         });
+
+        allElements.tasksButton.addEventListener('click', () => {
+            renderTasks();
+            allElements.tasksModal.classList.remove('hidden');
+            allElements.tasksModal.style.display = 'flex';
+        });
+
+        allElements.closeTasksModalButton.addEventListener('click', () => {
+            allElements.tasksModal.classList.add('hidden');
+        });
+
+        allElements.tasksList.addEventListener('click', (event) => {
+            if (!event.target.matches('.task-button')) return;
+            const button = event.target;
+            if (button.disabled) return;
+
+            const taskId = button.dataset.taskId;
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            playerData.balance += task.reward;
+            allElements.balanceDisplay.textContent = Math.round(playerData.balance);
+            localStorage.setItem(playerData.username, JSON.stringify(playerData));
+            
+            if (task.daily) {
+                const today = new Date().toISOString().slice(0, 10);
+                localStorage.setItem(`${playerData.username}_daily_bonus`, today);
+            } else {
+                localStorage.setItem(`${playerData.username}_${taskId}`, 'true');
+                window.open(task.url, '_blank');
+            }
+
+            button.textContent = languageStrings[currentLanguage].task_claimed_button;
+            button.disabled = true;
+        });
     }
 
+    function renderTasks() {
+        allElements.tasksList.innerHTML = '';
+        const today = new Date().toISOString().slice(0, 10);
+        tasks.forEach(task => {
+            let isCompleted = false;
+            const storageKey = task.daily ? `${playerData.username}_daily_bonus` : `${playerData.username}_${task.id}`;
+            const storedValue = localStorage.getItem(storageKey);
+
+            if (task.daily) {
+                isCompleted = storedValue === today;
+            } else {
+                isCompleted = storedValue === 'true';
+            }
+            
+            const taskItem = document.createElement('div');
+            taskItem.classList.add('task-item');
+            const taskText = document.createElement('span');
+            taskText.classList.add('task-text');
+            taskText.textContent = `${languageStrings[currentLanguage][task.textKey]} (+${task.reward})`;
+            const taskButton = document.createElement('button');
+            taskButton.classList.add('task-button');
+            taskButton.dataset.taskId = task.id;
+            
+            if (isCompleted) {
+                taskButton.textContent = languageStrings[currentLanguage].task_claimed_button;
+                taskButton.disabled = true;
+            } else {
+                taskButton.textContent = languageStrings[currentLanguage].task_claim_button;
+            }
+            
+            taskItem.appendChild(taskText);
+            taskItem.appendChild(taskButton);
+            allElements.tasksList.appendChild(taskItem);
+        });
+    }
+
+    // --- BAŞLANGIÇ AYARLARI ---
+    attachEventListeners();
     setLanguage(localStorage.getItem('language') || 'en');
     updateBetDisplay();
     populateInfoModal();
-    attachEventListeners();
 });
