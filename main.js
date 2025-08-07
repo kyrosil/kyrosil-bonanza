@@ -1,3 +1,4 @@
+// ... (tüm üst kısım ve fonksiyon tanımlamaları aynı, sadece startBonusRound ve loginButton.addEventListener('click' değişti) ...
 const languageStrings = {
     tr: {
         loading_text: "Oyun Yükleniyor...",
@@ -265,15 +266,17 @@ window.addEventListener('load', () => {
         return reel[Math.floor(Math.random() * reel.length)];
     }
     
-    function populateGrid() {
+    function populateGrid(isInitial = false) {
         allElements.gameGrid.innerHTML = '';
         currentGridSymbols = [];
         for (let i = 0; i < 30; i++) {
             const randomSymbolData = getRandomSymbol();
             currentGridSymbols.push(randomSymbolData);
             const symbolElement = createSymbolElement(randomSymbolData);
-            symbolElement.style.animation = `dropIn 0.5s ease-out forwards`;
-            symbolElement.style.animationDelay = `${(i * 0.02)}s`;
+            if(isInitial){
+                symbolElement.style.animation = `dropIn 0.5s ease-out forwards`;
+                symbolElement.style.animationDelay = `${(i * 0.02)}s`;
+            }
             allElements.gameGrid.appendChild(symbolElement);
         }
     }
@@ -324,67 +327,93 @@ window.addEventListener('load', () => {
         });
         await Promise.all(promises);
 
-        winningIndices.forEach(index => {
-            currentGridSymbols[index] = null;
+        const columns = Array.from({ length: 6 }, () => []);
+        currentGridSymbols.forEach((symbol, index) => {
+            if (!winningIndices.has(index)) {
+                columns[index % 6].push(symbol);
+            }
         });
-        
+
+        currentGridSymbols = [];
+        allElements.gameGrid.innerHTML = '';
+        const newElements = [];
+
         for (let col = 0; col < 6; col++) {
-            let emptySlots = 0;
-            for (let row = 4; row >= 0; row--) {
+            const newCol = [];
+            const survivors = columns[col];
+            const newSymbolCount = 5 - survivors.length;
+
+            for (let i = 0; i < newSymbolCount; i++) {
+                newCol.push(getRandomSymbol());
+            }
+            newCol.push(...survivors);
+
+            newCol.forEach((symbolData, row) => {
                 const index = row * 6 + col;
-                if (currentGridSymbols[index] === null) {
-                    emptySlots++;
-                } else if (emptySlots > 0) {
-                    const targetIndex = (row + emptySlots) * 6 + col;
-                    currentGridSymbols[targetIndex] = currentGridSymbols[index];
-                    currentGridSymbols[index] = null;
+                currentGridSymbols[index] = symbolData;
+                const element = createSymbolElement(symbolData);
+                element.style.top = `${row * 20}%`;
+                element.style.left = `${col * (100/6)}%`;
+                
+                if(row < newSymbolCount) {
+                    element.style.transform = `translateY(-250px)`;
+                    element.style.transition = 'none';
                 }
-            }
-            for (let i = 0; i < emptySlots; i++) {
-                currentGridSymbols[i * 6 + col] = getRandomSymbol();
-            }
+                allElements.gameGrid.appendChild(element);
+                newElements.push(element);
+            });
         }
 
-        allElements.gameGrid.innerHTML = '';
-        currentGridSymbols.forEach((symbolData) => {
-            const symbolElement = createSymbolElement(symbolData);
-            symbolElement.style.animation = `dropIn 0.5s ease-out forwards`;
-            allElements.gameGrid.appendChild(symbolElement);
+        await wait(50);
+
+        newElements.forEach(element => {
+            element.style.transform = `translateY(0)`;
         });
-        
+
         await wait(500);
     }
-
+    
     async function runSpinSequence() {
-        populateGrid();
-        await wait(500);
+        populateGrid(true);
+        await wait(800);
 
         let totalWinThisSequence = 0;
+        let runningWin = 0;
 
         while (true) {
-            const { totalWin, winningIndices } = calculateWinnings(true); // Ignore scatters during tumbles
+            const { totalWin, winningIndices } = calculateWinnings(true);
             if (totalWin > 0) {
-                totalWinThisSequence += totalWin;
-                allElements.spinWinAmount.textContent = Math.round(totalWinThisSequence);
+                runningWin += totalWin;
+                allElements.spinWinAmount.textContent = Math.round(runningWin);
                 await handleTumbles(winningIndices);
             } else {
                 break;
             }
         }
-
-        if (gameState === 'bonus' && totalWinThisSequence > 0) {
-            let totalMultiplier = 0;
+        
+        let totalMultiplier = 0;
+        if (gameState === 'bonus' && runningWin > 0) {
             currentGridSymbols.forEach(symbol => {
                 if (symbol && symbol.type === 'multiplier') {
                     totalMultiplier += symbol.value;
                 }
             });
             if (totalMultiplier > 0) {
-                totalWinThisSequence *= totalMultiplier;
+                runningWin *= totalMultiplier;
             }
         }
         
-        return totalWinThisSequence;
+        totalWinThisSequence = runningWin;
+        const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
+        if (scatterCount >= 4) {
+             const scatterPayTiers = payTable.scatter;
+             const multiplier = scatterPayTiers[scatterCount] || scatterPayTiers[6];
+             if(multiplier) {
+                totalWinThisSequence += betLevels[currentBetIndex] * multiplier;
+             }
+        }
+
+        return { finalWin: totalWinThisSequence, scatterCount };
     }
 
     async function handleNormalSpin() {
@@ -394,11 +423,10 @@ window.addEventListener('load', () => {
 
         const baseBet = betLevels[currentBetIndex];
         const cost = isAnteBetActive ? baseBet * 1.25 : baseBet;
-
         if (playerData.balance < cost) {
             alert(currentLanguage === 'tr' ? 'Yetersiz bakiye!' : 'Insufficient balance!');
-            setButtonsState(true);
             isSpinning = false;
+            setButtonsState(true);
             return;
         }
 
@@ -406,19 +434,12 @@ window.addEventListener('load', () => {
         allElements.balanceDisplay.textContent = Math.round(playerData.balance);
         allElements.spinWinAmount.textContent = 0;
         
-        let totalSpinWin = await runSpinSequence();
-
-        const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
-        if (scatterCount >= 4) {
-            const scatterPayTiers = payTable.scatter;
-            const multiplier = scatterPayTiers[scatterCount] || scatterPayTiers[6];
-            totalSpinWin += baseBet * multiplier;
-        }
+        const { finalWin, scatterCount } = await runSpinSequence();
         
-        if (totalSpinWin > 0) {
-            playerData.balance += totalSpinWin;
+        if (finalWin > 0) {
+            playerData.balance += finalWin;
             allElements.balanceDisplay.textContent = Math.round(playerData.balance);
-            allElements.spinWinAmount.textContent = Math.round(totalSpinWin);
+            allElements.spinWinAmount.textContent = Math.round(finalWin);
         }
         
         localStorage.setItem(playerData.username, JSON.stringify(playerData));
@@ -462,23 +483,20 @@ window.addEventListener('load', () => {
         allElements.totalBonusWinDisplay.textContent = 0;
         allElements.bonusOverlay.classList.remove('hidden');
         
-        while (freeSpinsRemaining > 0) {
-            freeSpinsRemaining--;
-            allElements.freeSpinsCountDisplay.textContent = freeSpinsRemaining;
+        for(let i=0; i < freeSpinsRemaining; i++) {
+            allElements.freeSpinsCountDisplay.textContent = freeSpinsRemaining - i;
             allElements.spinWinAmount.textContent = 0;
             
-            let totalWinThisSpin = await runSpinSequence();
+            const { finalWin, scatterCount } = await runSpinSequence();
             
-            if (totalWinThisSpin > 0) {
-                totalBonusWin += totalWinThisSpin;
+            if (finalWin > 0) {
+                totalBonusWin += finalWin;
                 allElements.totalBonusWinDisplay.textContent = Math.round(totalBonusWin);
-                allElements.spinWinAmount.textContent = Math.round(totalWinThisSpin);
+                allElements.spinWinAmount.textContent = Math.round(finalWin);
             }
 
-            const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
             if (scatterCount >= 3) {
                 freeSpinsRemaining += 5;
-                allElements.freeSpinsCountDisplay.textContent = freeSpinsRemaining;
                 await showExtraSpinsToast();
             }
             await wait(1000);
@@ -545,7 +563,6 @@ window.addEventListener('load', () => {
         document.querySelectorAll('#language-selector button').forEach(button => {
             button.addEventListener('click', () => setLanguage(button.dataset.lang));
         });
-
         allElements.loginButton.addEventListener('click', () => {
             const username = allElements.usernameInput.value.trim();
             const email = allElements.emailInput.value.trim();
@@ -578,7 +595,7 @@ window.addEventListener('load', () => {
                         playerData = storedPlayerData;
                         allElements.playerUsernameDisplay.textContent = playerData.username;
                         allElements.balanceDisplay.textContent = playerData.balance;
-                        populateGrid(); 
+                        populateGrid(true); 
                         allElements.loadingScreen.classList.add('hidden');
                         allElements.gameScreen.classList.remove('hidden');
                         allElements.gameScreen.style.display = 'flex';
@@ -586,7 +603,6 @@ window.addEventListener('load', () => {
                 }
             }, 80);
         });
-
         allElements.betIncreaseButton.addEventListener('click', () => {
             if (isSpinning) return;
             if (currentBetIndex < betLevels.length - 1) {
@@ -594,7 +610,6 @@ window.addEventListener('load', () => {
                 updateBetDisplay();
             }
         });
-
         allElements.betDecreaseButton.addEventListener('click', () => {
             if (isSpinning) return;
             if (currentBetIndex > 0) {
@@ -602,9 +617,7 @@ window.addEventListener('load', () => {
                 updateBetDisplay();
             }
         });
-
         allElements.spinButton.addEventListener('click', handleNormalSpin);
-        
         allElements.buyBonusButton.addEventListener('click', () => {
             if (isSpinning) return;
             const currentBet = betLevels[currentBetIndex];
@@ -613,40 +626,31 @@ window.addEventListener('load', () => {
             allElements.buyBonusModal.classList.remove('hidden');
             allElements.buyBonusModal.style.display = 'flex';
         });
-
         allElements.cancelBuyButton.addEventListener('click', () => allElements.buyBonusModal.classList.add('hidden'));
-        
         allElements.confirmBuyButton.addEventListener('click', () => {
             allElements.buyBonusModal.classList.add('hidden');
             startBonusRound(true);
         });
-        
         allElements.infoButton.addEventListener('click', () => {
             allElements.infoModal.classList.remove('hidden');
             allElements.infoModal.style.display = 'flex';
         });
-        
         allElements.closeInfoModalButton.addEventListener('click', () => allElements.infoModal.classList.add('hidden'));
-        
         allElements.infoNextButton.addEventListener('click', () => {
             if (infoCurrentPage < infoTotalPages) showInfoPage(infoCurrentPage + 1);
         });
-        
         allElements.infoPrevButton.addEventListener('click', () => {
             if (infoCurrentPage > 1) showInfoPage(infoCurrentPage - 1);
         });
-
         allElements.anteBetCheckbox.addEventListener('change', () => {
             isAnteBetActive = allElements.anteBetCheckbox.checked;
             allElements.buyBonusButton.disabled = isAnteBetActive;
             updateBetDisplay();
         });
-
         allElements.startBonusButton.addEventListener('click', () => {
             allElements.bonusTriggerModal.classList.add('hidden');
             startBonusRound(false);
         });
-
         allElements.closeBonusEndButton.addEventListener('click', () => {
             allElements.bonusEndModal.classList.add('hidden');
             setButtonsState(true);
@@ -655,8 +659,8 @@ window.addEventListener('load', () => {
     }
 
     // --- BAŞLANGIÇ AYARLARI ---
-    attachEventListeners();
     setLanguage(localStorage.getItem('language') || 'en');
     updateBetDisplay();
     populateInfoModal();
+    attachEventListeners();
 });
