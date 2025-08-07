@@ -338,7 +338,9 @@ window.addEventListener('load', () => {
         await Promise.all(promises);
         
         winningIndices.forEach(index => {
-            allElements.gameGrid.removeChild(gridElements[index]);
+            if(gridElements[index].parentNode === allElements.gameGrid) {
+                allElements.gameGrid.removeChild(gridElements[index]);
+            }
         });
         
         const newGridSymbols = [...currentGridSymbols];
@@ -352,12 +354,14 @@ window.addEventListener('load', () => {
                 if (currentGridSymbols[index] === null) {
                     emptySlots++;
                 } else if (emptySlots > 0) {
-                    const elementToMove = gridElements[index];
-                    const newRow = row + emptySlots;
-                    elementToMove.style.top = `${newRow * 20}%`;
-                    const targetIndex = newRow * 6 + col;
-                    currentGridSymbols[targetIndex] = currentGridSymbols[index];
-                    currentGridSymbols[index] = null;
+                    const elementToMove = allElements.gameGrid.querySelector(`[style*="top: ${row * 20}%"][style*="left: ${col * (100/6)}%"]`);
+                    if(elementToMove){
+                        const newRow = row + emptySlots;
+                        elementToMove.style.top = `${newRow * 20}%`;
+                        const targetIndex = newRow * 6 + col;
+                        currentGridSymbols[targetIndex] = currentGridSymbols[index];
+                        currentGridSymbols[index] = null;
+                    }
                 }
             }
 
@@ -366,15 +370,15 @@ window.addEventListener('load', () => {
                 const index = i * 6 + col;
                 currentGridSymbols[index] = newSymbolData;
                 const newElement = createSymbolElement(newSymbolData, index);
-                newElement.style.top = `-${(emptySlots - i) * 20}%`;
+                newElement.style.transform = `translateY(-${(emptySlots - i) * 60}px)`; // Start off-screen
                 allElements.gameGrid.appendChild(newElement);
-                await wait(50);
-                newElement.style.top = `${i * 20}%`;
+                await wait(50); // Stagger the drop
+                newElement.style.transform = 'translateY(0)';
             }
         }
         await wait(500);
     }
-
+    
     async function runSpinSequence() {
         populateGrid(true);
         await wait(800);
@@ -382,7 +386,7 @@ window.addEventListener('load', () => {
         let totalWinThisSequence = 0;
 
         while (true) {
-            const { totalWin, winningIndices } = calculateWinnings(true); 
+            const { totalWin, winningIndices } = calculateWinnings(true);
             if (winningIndices.size > 0) {
                 totalWinThisSequence += totalWin;
                 allElements.spinWinAmount.textContent = Math.round(totalWinThisSequence);
@@ -454,9 +458,7 @@ window.addEventListener('load', () => {
     }
     
     async function startBonusRound(isBought = false) {
-        if (isSpinning && !isBought) {
-             setButtonsState(true);
-             isSpinning = false;
+        if (isSpinning) {
              return;
         }
         
@@ -483,7 +485,7 @@ window.addEventListener('load', () => {
         allElements.totalBonusWinDisplay.textContent = 0;
         allElements.bonusOverlay.classList.remove('hidden');
         
-        for(let i = 0; i < 10; i = freeSpinsRemaining) {
+        while (freeSpinsRemaining > 0) {
             freeSpinsRemaining--;
             allElements.freeSpinsCountDisplay.textContent = freeSpinsRemaining;
             allElements.spinWinAmount.textContent = 0;
