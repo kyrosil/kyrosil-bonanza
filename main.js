@@ -271,19 +271,21 @@ window.addEventListener('load', () => {
         return reel[Math.floor(Math.random() * reel.length)];
     }
     
-    function populateGrid() {
+    function populateGrid(isInitial = false) {
         allElements.gameGrid.innerHTML = '';
         currentGridSymbols = [];
         for (let i = 0; i < 30; i++) {
             const randomSymbolData = getRandomSymbol();
             currentGridSymbols.push(randomSymbolData);
             const symbolElement = createSymbolElement(randomSymbolData, i);
-            symbolElement.style.opacity = '0';
-            symbolElement.style.transform = 'translateY(-50px)';
-            setTimeout(() => {
-                symbolElement.style.opacity = '1';
-                symbolElement.style.transform = 'translateY(0)';
-            }, 50 + (i * 20));
+            if (isInitial) {
+                symbolElement.style.opacity = '0';
+                symbolElement.style.transform = 'translateY(-50px)';
+                setTimeout(() => {
+                    symbolElement.style.opacity = '1';
+                    symbolElement.style.transform = 'translateY(0)';
+                }, 50 + (i * 20));
+            }
             allElements.gameGrid.appendChild(symbolElement);
         }
     }
@@ -335,46 +337,39 @@ window.addEventListener('load', () => {
         });
         await Promise.all(promises);
         
-        winningIndices.forEach(index => {
-            const element = gridElements[index];
-            if (element && element.parentNode === allElements.gameGrid) {
-                allElements.gameGrid.removeChild(element);
-            }
-        });
-        
         const newGridSymbols = [...currentGridSymbols];
         winningIndices.forEach(index => newGridSymbols[index] = null);
-        currentGridSymbols = newGridSymbols;
-
+        
         for (let col = 0; col < 6; col++) {
             let emptySlots = 0;
             for (let row = 4; row >= 0; row--) {
                 const index = row * 6 + col;
-                if (currentGridSymbols[index] === null) {
+                if (newGridSymbols[index] === null) {
                     emptySlots++;
                 } else if (emptySlots > 0) {
-                    const elementToMove = allElements.gameGrid.querySelector(`.symbol[style*="top: ${row * 20}%"][style*="left: ${col * (100/6)}%"]`);
-                    if(elementToMove){
-                        const newRow = row + emptySlots;
-                        elementToMove.style.top = `${newRow * 20}%`;
-                        const targetIndex = newRow * 6 + col;
-                        currentGridSymbols[targetIndex] = currentGridSymbols[index];
-                        currentGridSymbols[index] = null;
-                    }
+                    const targetIndex = (row + emptySlots) * 6 + col;
+                    newGridSymbols[targetIndex] = newGridSymbols[index];
+                    newGridSymbols[index] = null;
                 }
             }
-
             for (let i = 0; i < emptySlots; i++) {
-                const newSymbolData = getRandomSymbol();
-                const index = i * 6 + col;
-                currentGridSymbols[index] = newSymbolData;
-                const newElement = createSymbolElement(newSymbolData, index);
-                newElement.style.transform = `translateY(-${(emptySlots - i) * 60}px)`;
-                allElements.gameGrid.appendChild(newElement);
-                await wait(50);
-                newElement.style.transform = 'translateY(0)';
+                newGridSymbols[i * 6 + col] = getRandomSymbol();
             }
         }
+
+        currentGridSymbols = newGridSymbols;
+        allElements.gameGrid.innerHTML = '';
+        currentGridSymbols.forEach((symbolData, i) => {
+            const symbolElement = createSymbolElement(symbolData, i);
+            symbolElement.style.opacity = '0';
+            symbolElement.style.transform = 'translateY(-50px)';
+            setTimeout(() => {
+                symbolElement.style.opacity = '1';
+                symbolElement.style.transform = 'translateY(0)';
+            }, 50 + (i * 10));
+            allElements.gameGrid.appendChild(symbolElement);
+        });
+        
         await wait(500);
     }
     
@@ -385,7 +380,7 @@ window.addEventListener('load', () => {
         let totalWinThisSequence = 0;
 
         while (true) {
-            const { totalWin, winningIndices } = calculateWinnings(true); 
+            const { totalWin, winningIndices } = calculateWinnings(true);
             if (winningIndices.size > 0) {
                 totalWinThisSequence += totalWin;
                 allElements.spinWinAmount.textContent = Math.round(totalWinThisSequence);
@@ -407,16 +402,7 @@ window.addEventListener('load', () => {
             }
         }
         
-        const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
-        if (scatterCount >= 4) {
-             const scatterPayTiers = payTable.scatter;
-             const multiplier = scatterPayTiers[scatterCount] || scatterPayTiers[6];
-             if(multiplier) {
-                totalWinThisSequence += betLevels[currentBetIndex] * multiplier;
-             }
-        }
-
-        return { finalWin: totalWinThisSequence, scatterCount };
+        return { finalWin: totalWinThisSequence };
     }
 
     async function handleNormalSpin() {
@@ -437,8 +423,17 @@ window.addEventListener('load', () => {
         allElements.balanceDisplay.textContent = Math.round(playerData.balance);
         allElements.spinWinAmount.textContent = 0;
         
-        const { finalWin, scatterCount } = await runSpinSequence();
+        let { finalWin } = await runSpinSequence();
         
+        const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
+        if (scatterCount >= 4) {
+             const scatterPayTiers = payTable.scatter;
+             const multiplier = scatterPayTiers[scatterCount] || scatterPayTiers[6];
+             if(multiplier) {
+                finalWin += baseBet * multiplier;
+             }
+        }
+
         if (finalWin > 0) {
             playerData.balance += finalWin;
             allElements.balanceDisplay.textContent = Math.round(playerData.balance);
@@ -457,10 +452,12 @@ window.addEventListener('load', () => {
     }
     
     async function startBonusRound(isBought = false) {
-        setButtonsState(false);
+        if (isSpinning) return;
+        
         isSpinning = true;
+        setButtonsState(false);
 
-        if (isBought) {
+        if(isBought) {
             const baseBet = betLevels[currentBetIndex];
             const cost = baseBet * 100;
             if (playerData.balance < cost) {
