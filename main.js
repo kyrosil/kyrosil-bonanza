@@ -36,7 +36,63 @@ const languageStrings = {
         bonus_end_title: "TEBRİKLER",
         bonus_end_desc: "Toplam kazancın",
         bonus_end_close: "Devam Et",
-        extra_spins_toast: "+5 Bedava Çevirme"
+        extra_spins_toast: "+5 Bedava Çevirme",
+        tasks_title: "Görevler & Günlük Bonus",
+        task_claim_button: "Ödülü Al",
+        task_claimed_button: "Alındı",
+        task_insta_text: "Instagram'da Takip Et",
+        task_eu_text: "EU Portal'da takip et",
+        task_visit_text: "Websitemizi ziyaret et",
+        task_daily_text: "Günlük 5000 Kyroslira",
+        market_title: "Kyrosil Ödül Marketi",
+        back_to_game: "Oyuna Geri Dön",
+        buy_button: "Satın Al",
+        insufficient_balance: "Yetersiz Bakiye!",
+        reward1_name: "THY Yurtiçi Uçuş Bileti",
+        reward1_desc: "Türk Hava Yolları ile tek yön YURTİÇİ uçuş bileti. İstanbul, Ankara, İzmir, Antalya gibi şehirlerde geçerlidir.",
+        reward1_validity: "Geçerlilik: Türkiye",
+        reward2_name: "Aegean Airlines Avrupa İçi Gidiş-Dönüş Bileti",
+        reward2_desc: "Aegean Airlines ile Yunanistan çıkışlı Schengen içi bir destinasyona gidiş-dönüş uçuş bileti.",
+        reward2_validity: "Geçerlilik: Avrupa içi",
+        reward3_name: "Starbucks €25 Dijital Hediye Kartı",
+        reward3_desc: "Avrupa'daki Starbucks mağazalarında geçerli 25 Euro’luk dijital kod.",
+        reward3_validity: "Geçerlilik: Avrupa",
+        reward4_name: "Burger King 250₺ Tıkla Gelsin Bakiyesi",
+        reward4_desc: "Türkiye genelindeki Tıkla Gelsin uygulamasında geçerli 250 TL sipariş bakiyesi.",
+        reward4_validity: "Geçerlilik: Türkiye",
+        reward5_name: "Carrefour €20 Alışveriş Kartı",
+        reward5_desc: "Carrefour’un Avrupa şubelerinde geçerli 20 Euro’luk alışveriş kodu.",
+        reward5_validity: "Geçerlilik: Avrupa",
+        reward6_name: "Kyrosil Özel T-Shirt",
+        reward6_desc: "Kyrosil logosuyla özel üretilmiş pamuklu T-shirt. Siyah ve beyaz seçenekli.",
+        reward6_validity: "Geçerlilik: Türkiye ve Avrupa (kargo dahil)",
+        reward7_name: "Kyrosil Hoodie (Kapüşonlu)",
+        reward7_desc: "Kalın kumaş, siyah renkte, Kyrosil logolu unisex hoodie.",
+        reward7_validity: "Geçerlilik: Türkiye ve Avrupa (kargo dahil)",
+        reward8_name: "Mavi 200₺ Hediye Çeki",
+        reward8_desc: "Mavi mağazalarında veya online alışverişte geçerli 200 TL’lik dijital çeki.",
+        reward8_validity: "Geçerlilik: Türkiye",
+        reward9_name: "Yunandan Gelsin 1000₺ Alışveriş Hediye Çeki",
+        reward9_desc: "YunandanGelsin.com’da geçerli 1000 TL’lik alışveriş çeki. Zeytin, sabun ve hediyelik ürünlerde kullanılabilir.",
+        reward9_validity: "Geçerlilik: Türkiye (Avrupa’ya kargo +100 TL)",
+        reward10_name: "Spotify Premium – 6 Aylık Avrupa Lisansı",
+        reward10_desc: "Avrupa'da geçerli 6 aylık bireysel Spotify Premium kodu. Dijital teslimat.",
+        reward10_validity: "Geçerlilik: Avrupa",
+        reward11_name: "CarrefourSA 150₺ Dijital Alışveriş Kartı",
+        reward11_desc: "CarrefourSA mağaza ve online alışverişte geçerli 150 TL'lik bakiye kartı.",
+        reward11_validity: "Geçerlilik: Türkiye",
+        reward12_name: "Starbucks Türkiye 200₺ Dijital Kod",
+        reward12_desc: "Starbucks Türkiye uygulamasında geçerli 200 TL’lik hediye kodu.",
+        reward12_validity: "Geçerlilik: Türkiye",
+        reward13_name: "Burger King 100₺ Tıkla Gelsin Bakiyesi",
+        reward13_desc: "Tıkla Gelsin siparişlerinde geçerli 100 TL’lik dijital bakiye.",
+        reward13_validity: "Geçerlilik: Türkiye",
+        reward14_name: "THY Avrupa Gidiş-Dönüş Uçuş Bileti",
+        reward14_desc: "Türk Hava Yolları ile Avrupa şehirlerinden birine gidiş-dönüş ekonomi sınıfı uçuş. Vergiler dahil.",
+        reward14_validity: "Geçerlilik: Türkiye çıkışlı Avrupa",
+        reward15_name: "Adidas 50 Euro (veya 3000₺) Hediye Çeki",
+        reward15_desc: "Adidas mağaza ve online alışverişlerde geçerli 50 Euro (Avrupa) veya 3000 TL (Türkiye) değerinde hediye çeki.",
+        reward15_validity: "Geçerlilik: Türkiye ve Avrupa"
     },
     en: {
         loading_text: "Game Loading...",
@@ -75,9 +131,90 @@ const languageStrings = {
         bonus_end_title: "CONGRATULATIONS",
         bonus_end_desc: "You won a total of",
         bonus_end_close: "Continue",
-        extra_spins_toast: "+5 Free Spins"
+        extra_spins_toast: "+5 Free Spins",
+        tasks_title: "Tasks & Daily Bonus",
+        task_claim_button: "Claim",
+        task_claimed_button: "Claimed",
+        task_insta_text: "Follow on Instagram",
+        task_eu_text: "Follow on EU Portal",
+        task_visit_text: "Visit our Website",
+        task_daily_text: "Daily 5000 Kyroslira",
+        market_title: "Kyrosil Rewards Market",
+        back_to_game: "Back to Game",
+        buy_button: "Buy",
+        insufficient_balance: "Insufficient Balance!",
+        reward1_name: "THY Domestic Flight Ticket",
+        reward1_desc: "A one-way DOMESTIC flight ticket with Turkish Airlines. Valid in cities like Istanbul, Ankara, Izmir, Antalya.",
+        reward1_validity: "Validity: Turkey",
+        reward2_name: "Aegean Airlines Intra-Europe Round-Trip Ticket",
+        reward2_desc: "A round-trip flight ticket with Aegean Airlines to a destination within the Schengen Area, departing from Greece.",
+        reward2_validity: "Validity: Intra-Europe",
+        reward3_name: "Starbucks €25 Digital Gift Card",
+        reward3_desc: "A 25 Euro digital code valid in Starbucks stores in Europe.",
+        reward3_validity: "Validity: Europe",
+        reward4_name: "Burger King 250₺ Tıkla Gelsin Credit",
+        reward4_desc: "250 TL order credit valid in the Tıkla Gelsin application throughout Turkey.",
+        reward4_validity: "Validity: Turkey",
+        reward5_name: "Carrefour €20 Shopping Card",
+        reward5_desc: "A 20 Euro shopping code valid at Carrefour branches in Europe.",
+        reward5_validity: "Validity: Europe",
+        reward6_name: "Kyrosil Special T-Shirt",
+        reward6_desc: "Custom-made cotton T-shirt with the Kyrosil logo. Black and white options available.",
+        reward6_validity: "Validity: Turkey and Europe (shipping included)",
+        reward7_name: "Kyrosil Hoodie",
+        reward7_desc: "Heavy fabric, black, unisex hoodie with the Kyrosil logo.",
+        reward7_validity: "Validity: Turkey and Europe (shipping included)",
+        reward8_name: "Mavi 200₺ Gift Voucher",
+        reward8_desc: "A 200 TL digital voucher valid in Mavi stores or for online shopping.",
+        reward8_validity: "Validity: Turkey",
+        reward9_name: "Yunandan Gelsin 1000₺ Shopping Voucher",
+        reward9_desc: "A 1000 TL shopping voucher valid at YunandanGelsin.com. Can be used for olives, soaps, and gift products.",
+        reward9_validity: "Validity: Turkey (Shipping to Europe +100 TL)",
+        reward10_name: "Spotify Premium – 6-Month European License",
+        reward10_desc: "A 6-month individual Spotify Premium code valid in Europe. Digital delivery.",
+        reward10_validity: "Validity: Europe",
+        reward11_name: "CarrefourSA 150₺ Digital Shopping Card",
+        reward11_desc: "A 150 TL credit card valid at CarrefourSA stores and for online shopping.",
+        reward11_validity: "Validity: Turkey",
+        reward12_name: "Starbucks Turkey 200₺ Digital Code",
+        reward12_desc: "A 200 TL gift code valid in the Starbucks Turkey application.",
+        reward12_validity: "Validity: Turkey",
+        reward13_name: "Burger King 100₺ Tıkla Gelsin Credit",
+        reward13_desc: "A 100 TL digital credit valid for Tıkla Gelsin orders.",
+        reward13_validity: "Validity: Turkey",
+        reward14_name: "THY Europe Round-Trip Flight Ticket",
+        reward14_desc: "A round-trip economy class flight with Turkish Airlines to a European city. Taxes included.",
+        reward14_validity: "Validity: Europe, departing from Turkey",
+        reward15_name: "Adidas 50 Euro (or 3000₺) Gift Voucher",
+        reward15_desc: "A gift voucher worth 50 Euros (Europe) or 3000 TL (Turkey) valid in Adidas stores and for online shopping.",
+        reward15_validity: "Validity: Turkey and Europe"
     }
 };
+
+const tasks = [
+    { id: 'daily_bonus', textKey: 'task_daily_text', reward: 5000, daily: true },
+    { id: 'task_insta', textKey: 'task_insta_text', reward: 5000, url: 'https://www.instagram.com/kyrosil', daily: false },
+    { id: 'task_eu', textKey: 'task_eu_text', reward: 10000, url: 'https://ecas.ec.europa.eu/cas/login', daily: false },
+    { id: 'task_visit', textKey: 'task_visit_text', reward: 10000, url: 'http://kyrosil.eu', daily: false },
+];
+
+const rewards = [
+    { id: 1, nameKey: 'reward1_name', price: 350000, img: 'scatter.png', descKey: 'reward1_desc', validityKey: 'reward1_validity' },
+    { id: 2, nameKey: 'reward2_name', price: 500000, img: 'scatter.png', descKey: 'reward2_desc', validityKey: 'reward2_validity' },
+    { id: 3, nameKey: 'reward3_name', price: 250000, img: 'scatter.png', descKey: 'reward3_desc', validityKey: 'reward3_validity' },
+    { id: 4, nameKey: 'reward4_name', price: 150000, img: 'scatter.png', descKey: 'reward4_desc', validityKey: 'reward4_validity' },
+    { id: 5, nameKey: 'reward5_name', price: 180000, img: 'scatter.png', descKey: 'reward5_desc', validityKey: 'reward5_validity' },
+    { id: 6, nameKey: 'reward6_name', price: 120000, img: 'scatter.png', descKey: 'reward6_desc', validityKey: 'reward6_validity' },
+    { id: 7, nameKey: 'reward7_name', price: 220000, img: 'scatter.png', descKey: 'reward7_desc', validityKey: 'reward7_validity' },
+    { id: 8, nameKey: 'reward8_name', price: 140000, img: 'scatter.png', descKey: 'reward8_desc', validityKey: 'reward8_validity' },
+    { id: 9, nameKey: 'reward9_name', price: 300000, img: 'scatter.png', descKey: 'reward9_desc', validityKey: 'reward9_validity' },
+    { id: 10, nameKey: 'reward10_name', price: 200000, img: 'scatter.png', descKey: 'reward10_desc', validityKey: 'reward10_validity' },
+    { id: 11, nameKey: 'reward11_name', price: 100000, img: 'scatter.png', descKey: 'reward11_desc', validityKey: 'reward11_validity' },
+    { id: 12, nameKey: 'reward12_name', price: 125000, img: 'scatter.png', descKey: 'reward12_desc', validityKey: 'reward12_validity' },
+    { id: 13, nameKey: 'reward13_name', price: 75000, img: 'scatter.png', descKey: 'reward13_desc', validityKey: 'reward13_validity' },
+    { id: 14, nameKey: 'reward14_name', price: 500000, img: 'scatter.png', descKey: 'reward14_desc', validityKey: 'reward14_validity' },
+    { id: 15, nameKey: 'reward15_name', price: 480000, img: 'scatter.png', descKey: 'reward15_desc', validityKey: 'reward15_validity' },
+];
 
 const gameSymbols = [
     { name: 'banana', file: 'symbol_banana.png', type: 'normal' },
@@ -205,7 +342,13 @@ window.addEventListener('load', () => {
         closeBonusEndButton: document.getElementById('close-bonus-end-button'),
         progressBar: document.getElementById('progress-bar'),
         loadingPercentage: document.getElementById('loading-percentage'),
-        extraSpinsToast: document.getElementById('extra-spins-toast')
+        extraSpinsToast: document.getElementById('extra-spins-toast'),
+        tasksButton: document.getElementById('tasks-button'),
+        tasksModal: document.getElementById('tasks-modal'),
+        closeTasksModalButton: document.getElementById('close-tasks-modal'),
+        tasksList: document.getElementById('tasks-list'),
+        marketButton: document.getElementById('market-button'),
+        rewardsPreviewList: document.getElementById('rewards-preview-list')
     };
 
     const betLevels = [20, 50, 100, 200, 500, 1000];
@@ -220,20 +363,23 @@ window.addEventListener('load', () => {
         localStorage.setItem('language', lang);
         document.querySelectorAll('#language-selector button').forEach(button => {
             button.classList.remove('active');
-            if (button.dataset.lang === lang) button.classList.add('active');
+            if (button.dataset.lang === lang) {
+                button.classList.add('active');
+            }
         });
         document.querySelectorAll('[data-key]').forEach(element => {
             const key = element.dataset.key;
-            if (languageStrings[lang]?.[key]) {
+            if (languageStrings[lang] && languageStrings[lang][key]) {
                 element.textContent = languageStrings[lang][key];
             }
         });
         document.querySelectorAll('[data-key-placeholder]').forEach(element => {
             const key = element.dataset.keyPlaceholder;
-            if (languageStrings[lang]?.[key]) {
+            if (languageStrings[lang] && languageStrings[lang][key]) {
                 element.placeholder = languageStrings[lang][key];
             }
         });
+        updateRewardsPreview();
     }
 
     function createSymbolElement(symbolData, index) {
@@ -252,7 +398,7 @@ window.addEventListener('load', () => {
         const row = Math.floor(index / 6);
         const col = index % 6;
         symbolDiv.style.top = `${row * 20}%`;
-        symbolDiv.style.left = `${col * (100 / 6)}%`;
+        symbolDiv.style.left = `${col * (100/6)}%`;
         return symbolDiv;
     }
 
@@ -265,19 +411,21 @@ window.addEventListener('load', () => {
         return reel[Math.floor(Math.random() * reel.length)];
     }
     
-    function populateGrid() {
+    function populateGrid(isInitial = false) {
         allElements.gameGrid.innerHTML = '';
         currentGridSymbols = [];
         for (let i = 0; i < 30; i++) {
             const randomSymbolData = getRandomSymbol();
             currentGridSymbols.push(randomSymbolData);
             const symbolElement = createSymbolElement(randomSymbolData, i);
-            symbolElement.style.opacity = '0';
-            symbolElement.style.transform = 'translateY(-50px)';
-            setTimeout(() => {
-                symbolElement.style.opacity = '1';
-                symbolElement.style.transform = 'translateY(0)';
-            }, 50 + (i * 20));
+            if (isInitial) {
+                symbolElement.style.opacity = '0';
+                symbolElement.style.transform = 'translateY(-50px)';
+                setTimeout(() => {
+                    symbolElement.style.opacity = '1';
+                    symbolElement.style.transform = 'translateY(0)';
+                }, 50 + (i * 20));
+            }
             allElements.gameGrid.appendChild(symbolElement);
         }
     }
@@ -331,29 +479,27 @@ window.addEventListener('load', () => {
         });
         await Promise.all(promises);
         
-        winningIndices.forEach(index => {
-            currentGridSymbols[index] = null;
-        });
+        const newGridSymbols = [...currentGridSymbols];
+        winningIndices.forEach(index => newGridSymbols[index] = null);
         
         for (let col = 0; col < 6; col++) {
-            const survivors = [];
+            let emptySlots = 0;
             for (let row = 4; row >= 0; row--) {
                 const index = row * 6 + col;
-                if (currentGridSymbols[index] !== null) {
-                    survivors.push(currentGridSymbols[index]);
+                if (newGridSymbols[index] === null) {
+                    emptySlots++;
+                } else if (emptySlots > 0) {
+                    const targetIndex = (row + emptySlots) * 6 + col;
+                    newGridSymbols[targetIndex] = newGridSymbols[index];
+                    newGridSymbols[index] = null;
                 }
             }
-
-            for (let row = 4; row >= 0; row--) {
-                const index = row * 6 + col;
-                if (survivors.length > 0) {
-                    currentGridSymbols[index] = survivors.shift();
-                } else {
-                    currentGridSymbols[index] = getRandomSymbol();
-                }
+            for (let i = 0; i < emptySlots; i++) {
+                newGridSymbols[i * 6 + col] = getRandomSymbol();
             }
         }
 
+        currentGridSymbols = newGridSymbols;
         allElements.gameGrid.innerHTML = '';
         currentGridSymbols.forEach((symbolData, i) => {
             const symbolElement = createSymbolElement(symbolData, i);
@@ -436,7 +582,6 @@ window.addEventListener('load', () => {
         if (scatterCount >= 4) {
             await wait(500);
             allElements.bonusTriggerModal.classList.remove('hidden');
-            // Butonları aktif etmiyoruz, modal bekliyor
         } else {
             isSpinning = false;
             setButtonsState(true);
@@ -444,10 +589,16 @@ window.addEventListener('load', () => {
     }
     
     async function startBonusRound(isBought = false) {
-        setButtonsState(false);
+        if(isSpinning && isBought) { // Allow bonus buy even if spinning state is weird
+            isSpinning = false;
+        } else if (isSpinning) {
+            return;
+        }
+        
         isSpinning = true;
+        setButtonsState(false);
 
-        if (isBought) {
+        if(isBought) {
             const baseBet = betLevels[currentBetIndex];
             const cost = baseBet * 100;
             if (playerData.balance < cost) {
@@ -543,6 +694,19 @@ window.addEventListener('load', () => {
         allElements.extraSpinsToast.classList.remove('hidden');
         await wait(2000);
         allElements.extraSpinsToast.classList.add('hidden');
+    }
+
+    function updateRewardsPreview() {
+        if (!allElements.rewardsPreviewList) return;
+        const previewCount = 3; 
+        let listHTML = '<ul>';
+        for(let i = 0; i < previewCount && i < rewards.length; i++) {
+            const reward = rewards[i];
+            const name = languageStrings[currentLanguage][reward.nameKey] || reward.nameKey;
+            listHTML += `<li>${name}</li>`;
+        }
+        listHTML += '</ul>';
+        allElements.rewardsPreviewList.innerHTML = listHTML;
     }
     
     function attachEventListeners() {
@@ -725,7 +889,6 @@ window.addEventListener('load', () => {
         allElements.rewardsPreviewList.innerHTML = listHTML;
     }
 
-    // --- BAŞLANGIÇ AYARLARI ---
     attachEventListeners();
     setLanguage(localStorage.getItem('language') || 'en');
     updateBetDisplay();
