@@ -1,1 +1,128 @@
+:root {
+    --primary-color: #e94560;
+    --dark-bg: #1a1a2e;
+    --dark-secondary: #16213e;
+    --text-color: #fff;
+    --gold-color: #ffd700;
+}
 
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle, rgba(40,40,70,1) 0%, rgba(26,26,46,1) 100%);
+    color: var(--text-color);
+    padding: 20px;
+}
+
+.market-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--dark-secondary);
+    padding: 15px 30px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.player-info, .balance-info {
+    font-size: 18px;
+}
+
+#market-username, #market-balance {
+    font-weight: bold;
+    color: var(--gold-color);
+}
+
+.back-to-game-btn {
+    background: linear-gradient(45deg, #e94560, #ff7b54);
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.back-to-game-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+}
+
+main h1 {
+    text-align: center;
+    font-size: 36px;
+    color: var(--primary-color);
+    text-shadow: 0 0 15px var(--primary-color);
+}
+
+#market-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.market-item {
+    background-color: var(--dark-secondary);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.market-item img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    margin: 0 auto 15px auto;
+    filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.5));
+}
+
+.market-item h3 {
+    margin: 0 0 10px 0;
+    color: var(--primary-color);
+    font-size: 18px;
+    min-height: 54px; /* 2 satır için yer ayırır */
+}
+
+.item-desc {
+    font-size: 13px;
+    color: #ccc;
+    flex-grow: 1; /* Butonun en altta kalmasını sağlar */
+    margin-bottom: 15px;
+}
+
+.item-price {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--gold-color);
+    margin-bottom: 20px;
+}
+
+.item-buy-button {
+    background: linear-gradient(45deg, #28a745, #218838);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.item-buy-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+}
+
+.item-buy-button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
