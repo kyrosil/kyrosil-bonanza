@@ -164,7 +164,14 @@ body {
     font-size: 13px;
     color: #ccc;
     padding-left: 20px;
+    margin: 5px 0;
 }
+#rewards-preview-list ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: '★ ';
+}
+
 
 .legal-footer {
     margin-top: 30px;
@@ -518,10 +525,11 @@ input:checked + .slider:before {
 }
 
 
-/* MOBİL UYUM */
+/* MOBİL UYUM (GELİŞTİRİLDİ) */
 @media (max-width: 768px) {
     .login-box {
         padding: 20px;
+        width: 85%;
     }
     .game-header {
         flex-direction: column;
@@ -532,14 +540,26 @@ input:checked + .slider:before {
         padding: 5px 10px;
     }
     .game-controls {
-        justify-content: center;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        gap: 10px;
+        padding: 0 10px;
     }
     #ante-bet-control {
+        grid-column: 1 / 3; /* Tam genişlik kapla */
         order: 3;
-        width: 100%;
         justify-content: center;
-        margin-top: 10px;
+    }
+    .center-buttons {
+        grid-column: 1 / 2;
+        order: 1;
+        justify-content: flex-start;
+    }
+    #buy-bonus-button {
+        grid-column: 2 / 3;
+        order: 2;
+        justify-self: flex-end;
     }
     #spin-button {
         width: 70px;
@@ -547,8 +567,11 @@ input:checked + .slider:before {
         font-size: 35px;
     }
     #buy-bonus-button {
-        padding: 12px 20px;
-        font-size: 14px;
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+    #spin-win-display {
+        display: none; /* Mobilde yer kazanmak için kazanç göstergesini gizle */
     }
 }
 
@@ -741,7 +764,7 @@ input:checked + .slider:before {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s;
-    white-space: nowrap; /* "Ödülü Al" yazısının kırılmasını engeller */
+    white-space: nowrap;
 }
 
 .task-button:hover {
