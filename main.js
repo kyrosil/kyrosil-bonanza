@@ -8,7 +8,7 @@ const languageStrings = {
         login_button: "Oyuna Başla",
         how_to_play_title: "Nasıl Oynanır",
         how_to_play_desc: "Amaç, başlangıçtaki 5000 Kyroslira'yı çevirmeler yaparak veya bonus satın alarak katlamaktır. Kazanmak için 8 veya daha fazla aynı sembolü eşleştirin!",
-        rewards_title: "Ödüller",
+        rewards_title: "Ödüllerden Bazıları",
         welcome_text: "Hoş Geldin",
         balance_text: "Bakiye",
         bet_text: "BAHİS",
@@ -49,50 +49,8 @@ const languageStrings = {
         buy_button: "Satın Al",
         insufficient_balance: "Yetersiz Bakiye!",
         reward1_name: "THY Yurtiçi Uçuş Bileti",
-        reward1_desc: "Türk Hava Yolları ile tek yön YURTİÇİ uçuş bileti. İstanbul, Ankara, İzmir, Antalya gibi şehirlerde geçerlidir.",
-        reward1_validity: "Geçerlilik: Türkiye",
         reward2_name: "Aegean Airlines Avrupa İçi Gidiş-Dönüş Bileti",
-        reward2_desc: "Aegean Airlines ile Yunanistan çıkışlı Schengen içi bir destinasyona gidiş-dönüş uçuş bileti.",
-        reward2_validity: "Geçerlilik: Avrupa içi",
-        reward3_name: "Starbucks €25 Dijital Hediye Kartı",
-        reward3_desc: "Avrupa'daki Starbucks mağazalarında geçerli 25 Euro’luk dijital kod.",
-        reward3_validity: "Geçerlilik: Avrupa",
-        reward4_name: "Burger King 250₺ Tıkla Gelsin Bakiyesi",
-        reward4_desc: "Türkiye genelindeki Tıkla Gelsin uygulamasında geçerli 250 TL sipariş bakiyesi.",
-        reward4_validity: "Geçerlilik: Türkiye",
-        reward5_name: "Carrefour €20 Alışveriş Kartı",
-        reward5_desc: "Carrefour’un Avrupa şubelerinde geçerli 20 Euro’luk alışveriş kodu.",
-        reward5_validity: "Geçerlilik: Avrupa",
-        reward6_name: "Kyrosil Özel T-Shirt",
-        reward6_desc: "Kyrosil logosuyla özel üretilmiş pamuklu T-shirt. Siyah ve beyaz seçenekli.",
-        reward6_validity: "Geçerlilik: Türkiye ve Avrupa (kargo dahil)",
-        reward7_name: "Kyrosil Hoodie (Kapüşonlu)",
-        reward7_desc: "Kalın kumaş, siyah renkte, Kyrosil logolu unisex hoodie.",
-        reward7_validity: "Geçerlilik: Türkiye ve Avrupa (kargo dahil)",
-        reward8_name: "Mavi 200₺ Hediye Çeki",
-        reward8_desc: "Mavi mağazalarında veya online alışverişte geçerli 200 TL’lik dijital çeki.",
-        reward8_validity: "Geçerlilik: Türkiye",
-        reward9_name: "Yunandan Gelsin 1000₺ Alışveriş Hediye Çeki",
-        reward9_desc: "YunandanGelsin.com’da geçerli 1000 TL’lik alışveriş çeki. Zeytin, sabun ve hediyelik ürünlerde kullanılabilir.",
-        reward9_validity: "Geçerlilik: Türkiye (Avrupa’ya kargo +100 TL)",
-        reward10_name: "Spotify Premium – 6 Aylık Avrupa Lisansı",
-        reward10_desc: "Avrupa'da geçerli 6 aylık bireysel Spotify Premium kodu. Dijital teslimat.",
-        reward10_validity: "Geçerlilik: Avrupa",
-        reward11_name: "CarrefourSA 150₺ Dijital Alışveriş Kartı",
-        reward11_desc: "CarrefourSA mağaza ve online alışverişte geçerli 150 TL'lik bakiye kartı.",
-        reward11_validity: "Geçerlilik: Türkiye",
-        reward12_name: "Starbucks Türkiye 200₺ Dijital Kod",
-        reward12_desc: "Starbucks Türkiye uygulamasında geçerli 200 TL’lik hediye kodu.",
-        reward12_validity: "Geçerlilik: Türkiye",
-        reward13_name: "Burger King 100₺ Tıkla Gelsin Bakiyesi",
-        reward13_desc: "Tıkla Gelsin siparişlerinde geçerli 100 TL’lik dijital bakiye.",
-        reward13_validity: "Geçerlilik: Türkiye",
-        reward14_name: "THY Avrupa Gidiş-Dönüş Uçuş Bileti",
-        reward14_desc: "Türk Hava Yolları ile Avrupa şehirlerinden birine gidiş-dönüş ekonomi sınıfı uçuş. Vergiler dahil.",
-        reward14_validity: "Geçerlilik: Türkiye çıkışlı Avrupa",
-        reward15_name: "Adidas 50 Euro (veya 3000₺) Hediye Çeki",
-        reward15_desc: "Adidas mağaza ve online alışverişlerde geçerli 50 Euro (Avrupa) veya 3000 TL (Türkiye) değerinde hediye çeki.",
-        reward15_validity: "Geçerlilik: Türkiye ve Avrupa"
+        reward3_name: "Starbucks €25 Dijital Hediye Kartı"
     },
     en: {
         loading_text: "Game Loading...",
@@ -103,7 +61,7 @@ const languageStrings = {
         login_button: "Start Game",
         how_to_play_title: "How to Play",
         how_to_play_desc: "The goal is to increase your starting 5000 Kyroslira by spinning or buying bonuses. Match 8 or more symbols to win!",
-        rewards_title: "Rewards",
+        rewards_title: "Some of the Rewards",
         welcome_text: "Welcome",
         balance_text: "Balance",
         bet_text: "BET",
@@ -144,50 +102,8 @@ const languageStrings = {
         buy_button: "Buy",
         insufficient_balance: "Insufficient Balance!",
         reward1_name: "THY Domestic Flight Ticket",
-        reward1_desc: "A one-way DOMESTIC flight ticket with Turkish Airlines. Valid in cities like Istanbul, Ankara, Izmir, Antalya.",
-        reward1_validity: "Validity: Turkey",
         reward2_name: "Aegean Airlines Intra-Europe Round-Trip Ticket",
-        reward2_desc: "A round-trip flight ticket with Aegean Airlines to a destination within the Schengen Area, departing from Greece.",
-        reward2_validity: "Validity: Intra-Europe",
-        reward3_name: "Starbucks €25 Digital Gift Card",
-        reward3_desc: "A 25 Euro digital code valid in Starbucks stores in Europe.",
-        reward3_validity: "Validity: Europe",
-        reward4_name: "Burger King 250₺ Tıkla Gelsin Credit",
-        reward4_desc: "250 TL order credit valid in the Tıkla Gelsin application throughout Turkey.",
-        reward4_validity: "Validity: Turkey",
-        reward5_name: "Carrefour €20 Shopping Card",
-        reward5_desc: "A 20 Euro shopping code valid at Carrefour branches in Europe.",
-        reward5_validity: "Validity: Europe",
-        reward6_name: "Kyrosil Special T-Shirt",
-        reward6_desc: "Custom-made cotton T-shirt with the Kyrosil logo. Black and white options available.",
-        reward6_validity: "Validity: Turkey and Europe (shipping included)",
-        reward7_name: "Kyrosil Hoodie",
-        reward7_desc: "Heavy fabric, black, unisex hoodie with the Kyrosil logo.",
-        reward7_validity: "Validity: Turkey and Europe (shipping included)",
-        reward8_name: "Mavi 200₺ Gift Voucher",
-        reward8_desc: "A 200 TL digital voucher valid in Mavi stores or for online shopping.",
-        reward8_validity: "Validity: Turkey",
-        reward9_name: "Yunandan Gelsin 1000₺ Shopping Voucher",
-        reward9_desc: "A 1000 TL shopping voucher valid at YunandanGelsin.com. Can be used for olives, soaps, and gift products.",
-        reward9_validity: "Validity: Turkey (Shipping to Europe +100 TL)",
-        reward10_name: "Spotify Premium – 6-Month European License",
-        reward10_desc: "A 6-month individual Spotify Premium code valid in Europe. Digital delivery.",
-        reward10_validity: "Validity: Europe",
-        reward11_name: "CarrefourSA 150₺ Digital Shopping Card",
-        reward11_desc: "A 150 TL credit card valid at CarrefourSA stores and for online shopping.",
-        reward11_validity: "Validity: Turkey",
-        reward12_name: "Starbucks Turkey 200₺ Digital Code",
-        reward12_desc: "A 200 TL gift code valid in the Starbucks Turkey application.",
-        reward12_validity: "Validity: Turkey",
-        reward13_name: "Burger King 100₺ Tıkla Gelsin Credit",
-        reward13_desc: "A 100 TL digital credit valid for Tıkla Gelsin orders.",
-        reward13_validity: "Validity: Turkey",
-        reward14_name: "THY Europe Round-Trip Flight Ticket",
-        reward14_desc: "A round-trip economy class flight with Turkish Airlines to a European city. Taxes included.",
-        reward14_validity: "Validity: Europe, departing from Turkey",
-        reward15_name: "Adidas 50 Euro (or 3000₺) Gift Voucher",
-        reward15_desc: "A gift voucher worth 50 Euros (Europe) or 3000 TL (Turkey) valid in Adidas stores and for online shopping.",
-        reward15_validity: "Validity: Turkey and Europe"
+        reward3_name: "Starbucks €25 Digital Gift Card"
     }
 };
 
@@ -199,21 +115,9 @@ const tasks = [
 ];
 
 const rewards = [
-    { id: 1, nameKey: 'reward1_name', price: 350000, img: 'scatter.png', descKey: 'reward1_desc', validityKey: 'reward1_validity' },
-    { id: 2, nameKey: 'reward2_name', price: 500000, img: 'scatter.png', descKey: 'reward2_desc', validityKey: 'reward2_validity' },
-    { id: 3, nameKey: 'reward3_name', price: 250000, img: 'scatter.png', descKey: 'reward3_desc', validityKey: 'reward3_validity' },
-    { id: 4, nameKey: 'reward4_name', price: 150000, img: 'scatter.png', descKey: 'reward4_desc', validityKey: 'reward4_validity' },
-    { id: 5, nameKey: 'reward5_name', price: 180000, img: 'scatter.png', descKey: 'reward5_desc', validityKey: 'reward5_validity' },
-    { id: 6, nameKey: 'reward6_name', price: 120000, img: 'scatter.png', descKey: 'reward6_desc', validityKey: 'reward6_validity' },
-    { id: 7, nameKey: 'reward7_name', price: 220000, img: 'scatter.png', descKey: 'reward7_desc', validityKey: 'reward7_validity' },
-    { id: 8, nameKey: 'reward8_name', price: 140000, img: 'scatter.png', descKey: 'reward8_desc', validityKey: 'reward8_validity' },
-    { id: 9, nameKey: 'reward9_name', price: 300000, img: 'scatter.png', descKey: 'reward9_desc', validityKey: 'reward9_validity' },
-    { id: 10, nameKey: 'reward10_name', price: 200000, img: 'scatter.png', descKey: 'reward10_desc', validityKey: 'reward10_validity' },
-    { id: 11, nameKey: 'reward11_name', price: 100000, img: 'scatter.png', descKey: 'reward11_desc', validityKey: 'reward11_validity' },
-    { id: 12, nameKey: 'reward12_name', price: 125000, img: 'scatter.png', descKey: 'reward12_desc', validityKey: 'reward12_validity' },
-    { id: 13, nameKey: 'reward13_name', price: 75000, img: 'scatter.png', descKey: 'reward13_desc', validityKey: 'reward13_validity' },
-    { id: 14, nameKey: 'reward14_name', price: 500000, img: 'scatter.png', descKey: 'reward14_desc', validityKey: 'reward14_validity' },
-    { id: 15, nameKey: 'reward15_name', price: 480000, img: 'scatter.png', descKey: 'reward15_desc', validityKey: 'reward15_validity' },
+    { id: 1, nameKey: 'reward1_name', price: 350000 },
+    { id: 2, nameKey: 'reward2_name', price: 500000 },
+    { id: 3, nameKey: 'reward3_name', price: 250000 }
 ];
 
 const gameSymbols = [
@@ -228,20 +132,9 @@ const gameSymbols = [
     { name: 'heart_red', file: 'symbol_heart_red.png', type: 'normal' },
     { name: 'scatter', file: 'scatter.png', type: 'scatter' },
     { name: 'multiplier_bomb', file: 'multiplier_bomb.png', type: 'multiplier', value: 2 },
-    { name: 'multiplier_bomb', file: 'multiplier_bomb.png', type: 'multiplier', value: 3 },
-    { name: 'multiplier_bomb', file: 'multiplier_bomb.png', type: 'multiplier', value: 4 },
     { name: 'multiplier_bomb', file: 'multiplier_bomb.png', type: 'multiplier', value: 5 },
-    { name: 'multiplier_bomb', file: 'multiplier_bomb.png', type: 'multiplier', value: 6 },
-    { name: 'multiplier_bomb', file: 'multiplier_bomb.png', type: 'multiplier', value: 8 },
-    { name: 'multiplier_bomb', file: 'multiplier_bomb.png', type: 'multiplier', value: 10 },
-    { name: 'multiplier_bomb', file: 'multiplier_bomb.png', type: 'multiplier', value: 12 },
-    { name: 'multiplier_bomb', file: 'multiplier_bomb.png', type: 'multiplier', value: 15 },
-    { name: 'multiplier_bomb', file: 'multiplier_bomb.png', type: 'multiplier', value: 20 },
     { name: 'multiplier_50x', file: 'multiplier_50x.png', type: 'multiplier', value: 50 },
-    { name: 'multiplier_100x', file: 'multiplier_100x.png', type: 'multiplier', value: 100 },
-    { name: 'multiplier_250x', file: 'multiplier_250x.png', type: 'multiplier', value: 250 },
-    { name: 'multiplier_500x', file: 'multiplier_500x.png', type: 'multiplier', value: 500 },
-    { name: 'multiplier_1000x', file: 'multiplier_1000x.png', type: 'multiplier', value: 1000 }
+    { name: 'multiplier_100x', file: 'multiplier_100x.png', type: 'multiplier', value: 100 }
 ];
 
 const payTable = {
@@ -275,7 +168,7 @@ function createReel(isAnte) {
 
 function createMultiplierReel() {
     const reel = [];
-    const weights = { 2: 20, 3: 20, 4: 15, 5: 15, 6: 10, 8: 10, 10: 8, 12: 8, 15: 6, 20: 6, 50: 4, 100: 2, 250: 1, 500: 1, 1000: 1 };
+    const weights = { 2: 30, 5: 25, 50: 5, 100: 2 };
     for (const value in weights) {
         const symbolData = gameSymbols.find(s => s.type === 'multiplier' && s.value == value);
         for (let i = 0; i < weights[value]; i++) {
@@ -363,19 +256,17 @@ window.addEventListener('load', () => {
         localStorage.setItem('language', lang);
         document.querySelectorAll('#language-selector button').forEach(button => {
             button.classList.remove('active');
-            if (button.dataset.lang === lang) {
-                button.classList.add('active');
-            }
+            if (button.dataset.lang === lang) button.classList.add('active');
         });
         document.querySelectorAll('[data-key]').forEach(element => {
             const key = element.dataset.key;
-            if (languageStrings[lang] && languageStrings[lang][key]) {
+            if (languageStrings[lang]?.[key]) {
                 element.textContent = languageStrings[lang][key];
             }
         });
         document.querySelectorAll('[data-key-placeholder]').forEach(element => {
             const key = element.dataset.keyPlaceholder;
-            if (languageStrings[lang] && languageStrings[lang][key]) {
+            if (languageStrings[lang]?.[key]) {
                 element.placeholder = languageStrings[lang][key];
             }
         });
@@ -398,7 +289,7 @@ window.addEventListener('load', () => {
         const row = Math.floor(index / 6);
         const col = index % 6;
         symbolDiv.style.top = `${row * 20}%`;
-        symbolDiv.style.left = `${col * (100/6)}%`;
+        symbolDiv.style.left = `${col * (100 / 6)}%`;
         return symbolDiv;
     }
 
@@ -471,7 +362,7 @@ window.addEventListener('load', () => {
         const promises = [];
         winningIndices.forEach(index => {
             const element = gridElements[index];
-            if(element) {
+            if (element) {
                 element.classList.remove('winning');
                 element.classList.add('disappearing');
                 promises.push(wait(300));
@@ -513,11 +404,9 @@ window.addEventListener('load', () => {
     async function runSpinSequence() {
         populateGrid(true);
         await wait(800);
-
         let totalWinThisSequence = 0;
-
         while (true) {
-            const { totalWin, winningIndices } = calculateWinnings(true); 
+            const { totalWin, winningIndices } = calculateWinnings(true);
             if (winningIndices.size > 0) {
                 totalWinThisSequence += totalWin;
                 allElements.spinWinAmount.textContent = Math.round(totalWinThisSequence);
@@ -526,7 +415,6 @@ window.addEventListener('load', () => {
                 break;
             }
         }
-        
         let totalMultiplier = 0;
         if (gameState === 'bonus' && totalWinThisSequence > 0) {
             currentGridSymbols.forEach(symbol => {
@@ -538,17 +426,7 @@ window.addEventListener('load', () => {
                 totalWinThisSequence *= totalMultiplier;
             }
         }
-        
-        const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
-        if (scatterCount >= 4) {
-             const scatterPayTiers = payTable.scatter;
-             const multiplier = scatterPayTiers[scatterCount] || scatterPayTiers[6];
-             if(multiplier) {
-                totalWinThisSequence += betLevels[currentBetIndex] * multiplier;
-             }
-        }
-
-        return { finalWin: totalWinThisSequence, scatterCount };
+        return { finalWin: totalWinThisSequence, scatterCount: currentGridSymbols.filter(s => s && s.name === 'scatter').length };
     }
 
     async function handleNormalSpin() {
@@ -580,6 +458,13 @@ window.addEventListener('load', () => {
         localStorage.setItem(playerData.username, JSON.stringify(playerData));
         
         if (scatterCount >= 4) {
+            const scatterPayTiers = payTable.scatter;
+            const multiplier = scatterPayTiers[scatterCount] || scatterPayTiers[6];
+            if (multiplier) {
+                const scatterWin = baseBet * multiplier;
+                playerData.balance += scatterWin;
+                allElements.balanceDisplay.textContent = Math.round(playerData.balance);
+            }
             await wait(500);
             allElements.bonusTriggerModal.classList.remove('hidden');
         } else {
@@ -589,16 +474,14 @@ window.addEventListener('load', () => {
     }
     
     async function startBonusRound(isBought = false) {
-        if(isSpinning && isBought) { // Allow bonus buy even if spinning state is weird
-            isSpinning = false;
-        } else if (isSpinning) {
+        if (isSpinning && !isBought) {
             return;
         }
         
         isSpinning = true;
         setButtonsState(false);
 
-        if(isBought) {
+        if (isBought) {
             const baseBet = betLevels[currentBetIndex];
             const cost = baseBet * 100;
             if (playerData.balance < cost) {
