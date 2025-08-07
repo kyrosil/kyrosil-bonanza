@@ -1,4 +1,3 @@
-// ... (tüm üst kısım ve fonksiyon tanımlamaları aynı, sadece startBonusRound ve loginButton.addEventListener('click' değişti) ...
 const languageStrings = {
     tr: {
         loading_text: "Oyun Yükleniyor...",
@@ -241,7 +240,7 @@ window.addEventListener('load', () => {
         });
     }
 
-    function createSymbolElement(symbolData) {
+    function createSymbolElement(symbolData, index) {
         const symbolDiv = document.createElement('div');
         symbolDiv.classList.add('symbol');
         const symbolImg = document.createElement('img');
@@ -254,6 +253,12 @@ window.addEventListener('load', () => {
             valueSpan.textContent = `${symbolData.value}x`;
             symbolDiv.appendChild(valueSpan);
         }
+        
+        const row = Math.floor(index / 6);
+        const col = index % 6;
+        symbolDiv.style.top = `${row * 20}%`;
+        symbolDiv.style.left = `${col * (100/6)}%`;
+
         return symbolDiv;
     }
 
@@ -272,10 +277,14 @@ window.addEventListener('load', () => {
         for (let i = 0; i < 30; i++) {
             const randomSymbolData = getRandomSymbol();
             currentGridSymbols.push(randomSymbolData);
-            const symbolElement = createSymbolElement(randomSymbolData);
+            const symbolElement = createSymbolElement(randomSymbolData, i);
             if(isInitial){
-                symbolElement.style.animation = `dropIn 0.5s ease-out forwards`;
-                symbolElement.style.animationDelay = `${(i * 0.02)}s`;
+                symbolElement.style.opacity = '0';
+                symbolElement.style.transform = 'translateY(-50px)';
+                setTimeout(() => {
+                    symbolElement.style.opacity = '1';
+                    symbolElement.style.transform = 'translateY(0)';
+                }, 50 + (i * 20));
             }
             allElements.gameGrid.appendChild(symbolElement);
         }
@@ -321,70 +330,62 @@ window.addEventListener('load', () => {
         
         const promises = [];
         winningIndices.forEach(index => {
-            gridElements[index].classList.remove('winning');
-            gridElements[index].classList.add('disappearing');
+            const element = gridElements[index];
+            element.classList.remove('winning');
+            element.classList.add('disappearing');
             promises.push(wait(300));
         });
         await Promise.all(promises);
-
-        const columns = Array.from({ length: 6 }, () => []);
-        currentGridSymbols.forEach((symbol, index) => {
-            if (!winningIndices.has(index)) {
-                columns[index % 6].push(symbol);
-            }
+        
+        winningIndices.forEach(index => {
+            allElements.gameGrid.removeChild(gridElements[index]);
         });
-
-        currentGridSymbols = [];
-        allElements.gameGrid.innerHTML = '';
-        const newElements = [];
+        
+        const newGridSymbols = [...currentGridSymbols];
+        winningIndices.forEach(index => newGridSymbols[index] = null);
+        currentGridSymbols = newGridSymbols;
 
         for (let col = 0; col < 6; col++) {
-            const newCol = [];
-            const survivors = columns[col];
-            const newSymbolCount = 5 - survivors.length;
-
-            for (let i = 0; i < newSymbolCount; i++) {
-                newCol.push(getRandomSymbol());
-            }
-            newCol.push(...survivors);
-
-            newCol.forEach((symbolData, row) => {
+            let emptySlots = 0;
+            for (let row = 4; row >= 0; row--) {
                 const index = row * 6 + col;
-                currentGridSymbols[index] = symbolData;
-                const element = createSymbolElement(symbolData);
-                element.style.top = `${row * 20}%`;
-                element.style.left = `${col * (100/6)}%`;
-                
-                if(row < newSymbolCount) {
-                    element.style.transform = `translateY(-250px)`;
-                    element.style.transition = 'none';
+                if (currentGridSymbols[index] === null) {
+                    emptySlots++;
+                } else if (emptySlots > 0) {
+                    const elementToMove = gridElements[index];
+                    const newRow = row + emptySlots;
+                    elementToMove.style.top = `${newRow * 20}%`;
+                    const targetIndex = newRow * 6 + col;
+                    currentGridSymbols[targetIndex] = currentGridSymbols[index];
+                    currentGridSymbols[index] = null;
                 }
-                allElements.gameGrid.appendChild(element);
-                newElements.push(element);
-            });
+            }
+
+            for (let i = 0; i < emptySlots; i++) {
+                const newSymbolData = getRandomSymbol(gameState === 'bonus');
+                const index = i * 6 + col;
+                currentGridSymbols[index] = newSymbolData;
+                const newElement = createSymbolElement(newSymbolData, index);
+                newElement.style.top = `-${(emptySlots - i) * 20}%`;
+                allElements.gameGrid.appendChild(newElement);
+                await wait(50);
+                newElement.style.top = `${i * 20}%`;
+            }
         }
-
-        await wait(50);
-
-        newElements.forEach(element => {
-            element.style.transform = `translateY(0)`;
-        });
-
         await wait(500);
     }
-    
+
     async function runSpinSequence() {
         populateGrid(true);
         await wait(800);
 
         let totalWinThisSequence = 0;
-        let runningWin = 0;
 
         while (true) {
-            const { totalWin, winningIndices } = calculateWinnings(true);
-            if (totalWin > 0) {
-                runningWin += totalWin;
-                allElements.spinWinAmount.textContent = Math.round(runningWin);
+            const { totalWin, winningIndices } = calculateWinnings(true); 
+            if (winningIndices.size > 0) {
+                totalWinThisSequence += totalWin;
+                allElements.spinWinAmount.textContent = Math.round(totalWinThisSequence);
                 await handleTumbles(winningIndices);
             } else {
                 break;
@@ -392,18 +393,17 @@ window.addEventListener('load', () => {
         }
         
         let totalMultiplier = 0;
-        if (gameState === 'bonus' && runningWin > 0) {
+        if (gameState === 'bonus' && totalWinThisSequence > 0) {
             currentGridSymbols.forEach(symbol => {
                 if (symbol && symbol.type === 'multiplier') {
                     totalMultiplier += symbol.value;
                 }
             });
             if (totalMultiplier > 0) {
-                runningWin *= totalMultiplier;
+                totalWinThisSequence *= totalMultiplier;
             }
         }
         
-        totalWinThisSequence = runningWin;
         const scatterCount = currentGridSymbols.filter(s => s && s.name === 'scatter').length;
         if (scatterCount >= 4) {
              const scatterPayTiers = payTable.scatter;
@@ -483,8 +483,9 @@ window.addEventListener('load', () => {
         allElements.totalBonusWinDisplay.textContent = 0;
         allElements.bonusOverlay.classList.remove('hidden');
         
-        for(let i=0; i < freeSpinsRemaining; i++) {
-            allElements.freeSpinsCountDisplay.textContent = freeSpinsRemaining - i;
+        for(let i = 0; i < 10; i = freeSpinsRemaining) {
+            freeSpinsRemaining--;
+            allElements.freeSpinsCountDisplay.textContent = freeSpinsRemaining;
             allElements.spinWinAmount.textContent = 0;
             
             const { finalWin, scatterCount } = await runSpinSequence();
@@ -497,6 +498,7 @@ window.addEventListener('load', () => {
 
             if (scatterCount >= 3) {
                 freeSpinsRemaining += 5;
+                allElements.freeSpinsCountDisplay.textContent = freeSpinsRemaining;
                 await showExtraSpinsToast();
             }
             await wait(1000);
