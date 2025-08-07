@@ -160,6 +160,11 @@ body {
     margin-top: 0;
     line-height: 1.5;
 }
+#rewards-preview-list {
+    font-size: 13px;
+    color: #ccc;
+    padding-left: 20px;
+}
 
 .legal-footer {
     margin-top: 30px;
@@ -310,14 +315,11 @@ body {
 }
 
 .symbol {
-    border-radius: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 5px;
     box-sizing: border-box;
-    opacity: 1;
-    position: absolute; /* ÖNEMLİ DEĞİŞİKLİK */
+    position: absolute;
     width: calc(100% / 6);
     height: calc(100% / 5);
     transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
@@ -342,8 +344,8 @@ body {
 }
 
 .symbol img {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 90%;
+    max-height: 90%;
     object-fit: contain;
     -webkit-user-drag: none;
     user-select: none;
@@ -372,7 +374,13 @@ body {
     box-sizing: border-box;
 }
 
-#info-button {
+.center-buttons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#tasks-button, #market-button, #info-button {
     background-color: var(--dark-secondary);
     color: var(--primary-color);
     width: 40px;
@@ -383,9 +391,10 @@ body {
     font-weight: bold;
     cursor: pointer;
     line-height: 1;
+    padding: 0;
     transition: background-color 0.2s;
 }
-#info-button:hover {
+#tasks-button:hover, #market-button:hover, #info-button:hover {
     background-color: var(--primary-color);
     color: white;
 }
@@ -699,41 +708,6 @@ input:checked + .slider:before {
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
-/* ... (Diğer stiller aynı, en sona eklemeler yapıldı) ... */
-.game-controls {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    box-sizing: border-box;
-}
-
-.center-buttons {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-#tasks-button, #info-button {
-    background-color: var(--dark-secondary);
-    color: var(--primary-color);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid var(--primary-color);
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-    line-height: 1;
-    transition: background-color 0.2s;
-}
-#tasks-button:hover, #info-button:hover {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-/* ... (Diğer stiller aynı, en sona eklemeler yapıldı) ... */
 
 /* GÖREVLER PENCERESİ */
 #tasks-list {
@@ -767,6 +741,7 @@ input:checked + .slider:before {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s;
+    white-space: nowrap; /* "Ödülü Al" yazısının kırılmasını engeller */
 }
 
 .task-button:hover {
